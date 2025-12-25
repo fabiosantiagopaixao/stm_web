@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "./", // importante para GitHub Pages
+  base: '/stm_web/', // nome do repositório
 });

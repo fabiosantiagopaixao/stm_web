@@ -1,33 +1,40 @@
-# STM Web - Admin Panel
+# STM Web
 
-Painel administrativo simples usando HTML, CSS e JavaScript puro, com Bootstrap 5 e integração com Google Apps Script.
+Projeto **STM Web** — Painel administrativo para gerenciamento de congregações, usuários, territórios e endereços.
 
----
-
-## 🔹 Funcionalidades
-
-- Sidebar colapsável com menu lateral
-- Páginas: Home, Congregations, Users, Territories, Addresses
-- Tabelas com dados carregados via API (Google Apps Script)
-- Botões de ação **Edit** e **Delete** (funções placeholders)
-- Responsivo e estilizado com **Bootstrap 5**
-- Estrutura modular para fácil manutenção
+O projeto utiliza **JavaScript puro**, **Bootstrap 5** e consome uma API hospedada no Google Apps Script.
 
 ---
 
-## 🔹 Pré-requisitos
+## 🚀 Funcionalidades
 
-- Node.js >= 18
+- Menu lateral responsivo com navegação entre páginas:
+  - Home
+  - Congregations
+  - Users
+  - Territories
+  - Addresses
+- Cada página possui uma tabela para exibir dados da API
+- Coluna de ações com botões **Editar** e **Deletar** (funções vazias para implementar)
+- Layout responsivo com **Bootstrap 5**
+- Preparado para deploy em **GitHub Pages**
+
+---
+
+## 📦 Pré-requisitos
+
+- Node.js (>= 16.x)
 - npm
-- Conta no GitHub
+- Git
 
 ---
 
-## 🔹 Instalação
+## ⚡ Instalação
 
 Clone o repositório:
 
 ```bash
 git clone https://github.com/fabiosantiagopaixao/stm_web.git
 cd stm_web
+
 ```

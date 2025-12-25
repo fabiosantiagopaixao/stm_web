@@ -5,6 +5,8 @@ import { loadTerritory } from "./pages/territory.js";
 import { loadAddress } from "./pages/address.js";
 
 export function navigateTo(page) {
+  if (page === undefined) return
+  
   const routes = {
     home: loadHome,
     congregation: loadCongregation,

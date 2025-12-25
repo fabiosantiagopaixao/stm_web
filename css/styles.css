@@ -1,0 +1,169 @@
+.nav-item a {
+    cursor: pointer;
+}
+
+.nav-item a {
+    cursor: pointer;
+}
+
+.bg-primary {
+    background-color: #2196F3FF!important;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.bootstrap-table .fixed-table-body {
+  overflow: auto;
+}
+
+table {
+  white-space: nowrap;
+}
+
+/* Reset */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Remove scroll global */
+body {
+  overflow: hidden;
+}
+
+/* Layout principal */
+#app-layout {
+  height: 100vh; /* ocupa toda a altura da tela */
+  display: flex;
+}
+
+/* Sidebar */
+#sidebar {
+  width: 240px;
+  min-width: 240px;
+  height: 100vh;
+  transition: width 0.3s ease;
+  overflow-y: auto;
+}
+
+/* Sidebar recolhida */
+#sidebar.collapsed {
+  width: 70px;
+  min-width: 70px;
+}
+
+/* Conteúdo principal */
+#content-area {
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* MAIN com scroll */
+#content {
+  overflow-y: auto;
+  overflow-x: auto;
+  padding: 30px;
+  background-color: #f8f9fa;
+  width: 1200px;
+  padding-bottom: 100px;
+}
+/* Footer fixo ao final do content-area */
+#footer {
+    height: 40px;
+    border-top: 1px solid #dee2e6;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    color: #fff;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding-top: 10px;
+    background-color: rgb(18, 127, 215);
+}
+/* Sidebar */
+/* Sidebar base */
+#sidebar {
+  width: 240px;
+  transition: width 0.3s ease;
+}
+
+/* Sidebar colapsado */
+#sidebar.collapsed {
+  width: 70px;
+}
+
+/* Texto do menu */
+.menu-text {
+  transition: opacity 0.2s ease;
+}
+
+/* Esconder texto quando colapsado */
+#sidebar.collapsed .menu-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* Centralizar ícones */
+#sidebar.collapsed .nav-link {
+  justify-content: center;
+}
+
+/* Tooltip melhor visibilidade */
+#sidebar .nav-link {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+/* Hover */
+#sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+#sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  font-weight: 500;
+}
+
+#footer small.text-muted {
+    float: left;
+    text-align: left;
+    color: #fff!important;
+}
+
+.text-primary {
+    color: rgb(18, 127, 215) !important;
+}
+
+.navbar{
+  background-color:  rgb(18, 127, 215) !important;
+}
+
+div#pagination {
+    width: 600px;
+    overflow-x: auto;
+}
+
+@media (min-width: 992px) {
+  #sidebar.collapsed {
+    width: 50px;
+    min-width: 50px;
+    padding: 12px;
+  }
+  #sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 10px 0;
+  }
+
+  #sidebar.collapsed .nav-link i {
+    margin: 0;
+  }
+  
+  button#toggleSidebar {
+    margin-left: -10px;
+}
+}
