@@ -1,10 +1,14 @@
+const STORAGE_KEY = "stm_data_";
+
 export class RestApiBaseService {
+  
   constructor(sheet = "") {
     this.sheet = sheet; // Nome da sheet padrão
     this.scriptGoogleUrl = "https://script.google.com/macros/s/";
     this.idSheet =
       "AKfycbzEOzJtIfjKSDgSZftW-kq1Szxdqkait9x8SR7zzd71s3kDTo8n_bLgSDkhKo_c9tad";
     this.execSheet = "/exec?sheet=";
+    this.keyStorage = STORAGE_KEY + this.sheet;
   }
 
   /* ======= MÉTODOS PRIVADOS ======= */
@@ -19,20 +23,44 @@ export class RestApiBaseService {
     return `${this.#getBaseUrl(this.sheet)}&congregation_number=${congregationNumber}`;
   }
 
+  #saveAsynStorage(data, congregationNumber = null) {
+    const key = congregationNumber ? `${this.keyStorage}_${congregationNumber}` : this.keyStorage;
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  #getAsynStorage(congregationNumber = null) {
+    const key = congregationNumber ? `${this.keyStorage}_${congregationNumber}` : this.keyStorage;
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  }
+
+
+
   /* ======= MÉTODOS PÚBLICOS ======= */
   async get() {
-    const url = this.#getBaseUrl(this.sheet);
+    const dataStorage = this.#getAsynStorage();
+    if (dataStorage) return dataStorage;
 
+    const url = this.#getBaseUrl(this.sheet);
     const res = await fetch(url);
     if (!res.ok) throw new Error("GET error");
-    return res.json();
+
+    const data = await res.json();
+    if (data) this.#saveAsynStorage(data);
+    return data;
   }
 
   async getByCongregation(congregationNumber) {
+    const dataStorage = this.#getAsynStorage(congregationNumber);
+    if (dataStorage) return dataStorage;
+
     const url = this.#getBaseUrlWithCongregation(congregationNumber);
     const res = await fetch(url);
     if (!res.ok) throw new Error("GET error");
-    return res.json();
+
+    const data = await res.json();
+    if (data) this.#saveAsynStorage(data, congregationNumber);
+    return data;
   }
 
   async post(method, body) {
@@ -44,4 +72,10 @@ export class RestApiBaseService {
     if (!res.ok) throw new Error("POST error");
     return res.json();
   }
+  
+  clearStorage(congregationNumber = null) {
+    const key = congregationNumber ? `${this.keyStorage}_${congregationNumber}` : this.keyStorage;
+    localStorage.removeItem(key);
+  }
+
 }

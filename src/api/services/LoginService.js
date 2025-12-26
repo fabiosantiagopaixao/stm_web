@@ -1,11 +1,14 @@
-// src/api/services/LoginService.js
 import { UserService } from "./UserService.js";
+import { TerritoryService } from "./TerritoryService.js";
+import { AddressService } from "./AddressService.js";
 
 const STORAGE_KEY = "stm_logged_user";
 
 export class LoginService {
   constructor() {
     this.userService = new UserService();
+    this.territoryService = new TerritoryService();
+    this.addressService = new AddressService();
   }
 
   async login(congregationNumber, username, password) {
@@ -40,6 +43,9 @@ export class LoginService {
   }
 
   logout() {
+    this.userService.clearStorage();
+    this.territoryService.clearStorage();
+    this.addressService.clearStorage();
     localStorage.removeItem(STORAGE_KEY);
   }
 }
