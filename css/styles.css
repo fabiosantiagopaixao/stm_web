@@ -148,6 +148,28 @@ div#pagination {
     overflow-x: auto;
 }
 
+span.label_blue{
+  color: red!important;
+}
+
+/* estilo padrão */
+.logout-btn {
+  background-color: #00b3ff; /* fundo branco */
+  color: #fff; /* texto e ícone vermelho */
+  border: 1px solid #00b3ff;
+  transition: all 0.2s;
+}
+
+/* hover */
+.logout-btn:hover {
+  background-color: #dc3545; /* vermelho */
+  color: #fff; /* texto e ícone branco */
+}
+.margLeft10{
+  margin-left: 10px;
+}
+
+
 @media (min-width: 992px) {
   #sidebar.collapsed {
     width: 50px;
@@ -162,7 +184,7 @@ div#pagination {
   #sidebar.collapsed .nav-link i {
     margin: 0;
   }
-  
+
   button#toggleSidebar {
     margin-left: -10px;
 }

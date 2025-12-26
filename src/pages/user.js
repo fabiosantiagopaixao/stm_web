@@ -1,5 +1,5 @@
-// pages/user.js
 import { UserService } from "../api/services/UserService.js";
+import { LoginService } from "../api/services/LoginService.js";
 import { showLoading, hideLoading } from "../components/loading.js";
 import { renderTable } from "../components/Table.js";
 
@@ -11,7 +11,9 @@ export async function loadUser() {
   showLoading(content, "Loading Users...");
 
   const service = new UserService();
-  const data = await service.getAll();
+  const loginService = new LoginService();
+  const userLogged = loginService.getLoggedUser();
+  const data = await service.getByCongregation(userLogged.congregation_number);
 
   // Remove loading
   hideLoading(content);

@@ -2,10 +2,12 @@ import { navigateTo } from "./route.js";
 
 const sidebar = document.getElementById("sidebar");
 const toggleBtn = document.getElementById("toggleSidebar");
+const iconLogout = document.getElementById("iconLogout");
 
 // Botão ☰
 toggleBtn.addEventListener("click", () => {
   sidebar.classList.toggle("collapsed");
+  iconLogout.classList.add("margLeft10");
 });
 
 // Links do menu

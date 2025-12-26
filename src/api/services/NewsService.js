@@ -1,7 +1,9 @@
-import { RestApiBase } from "../RestApiBase.js";
+import { RestApiBaseService } from "./base/RestApiBaseService.js";
 
-export class NewsService extends RestApiBase {
-  getAll() {
-    return this.get("news");
+export class NewsService extends RestApiBaseService {
+
+  constructor() {
+    super("news"); 
   }
+
 }

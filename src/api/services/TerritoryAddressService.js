@@ -1,7 +1,9 @@
-import { RestApiBase } from "../RestApiBase.js";
+import { RestApiBaseService } from "./base/RestApiBaseService.js";
 
-export class TerritoryAddressService extends RestApiBase {
-  getAll() {
-    return this.get("territory_address");
+export class TerritoryAddressService extends RestApiBaseService {
+
+  constructor() {
+    super("territory_address"); 
   }
+
 }

@@ -1,5 +1,5 @@
-// pages/territory.js
 import { TerritoryService } from "../api/services/TerritoryService.js";
+import { LoginService } from "../api/services/LoginService.js";
 import { showLoading, hideLoading } from "../components/loading.js";
 import { renderTable } from "../components/Table.js";
 
@@ -11,7 +11,9 @@ export async function loadTerritory() {
   showLoading(content, "Loading Territories...");
 
   const service = new TerritoryService();
-  const data = await service.getAll();
+  const loginService = new LoginService();
+  const userLogged = loginService.getLoggedUser();
+  const data = await service.getByCongregation(userLogged.congregation_number);
 
   // Remove loading
   hideLoading(content);
