@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "delete": "gh-pages -d dist -b gh-pages --dotfiles --silent --dest .",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
