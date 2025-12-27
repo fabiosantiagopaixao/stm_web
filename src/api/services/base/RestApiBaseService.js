@@ -1,12 +1,11 @@
 const STORAGE_KEY = "stm_data_";
 
 export class RestApiBaseService {
-  
   constructor(sheet = "") {
     this.sheet = sheet; // Nome da sheet padrão
     this.scriptGoogleUrl = "https://script.google.com/macros/s/";
     this.idSheet =
-      "AKfycbzEOzJtIfjKSDgSZftW-kq1Szxdqkait9x8SR7zzd71s3kDTo8n_bLgSDkhKo_c9tad";
+      "AKfycbwR3WVAPyUhzXVUniBlHvKtkcOA7ORiIPZGf4YzD9sCuDKSpbhqYw_IK4nvrqnelBetVw";
     this.execSheet = "/exec?sheet=";
     this.keyStorage = STORAGE_KEY + this.sheet;
   }
@@ -20,21 +19,25 @@ export class RestApiBaseService {
 
   #getBaseUrlWithCongregation(congregationNumber) {
     if (!congregationNumber) throw new Error("Congregation Number not defined");
-    return `${this.#getBaseUrl(this.sheet)}&congregation_number=${congregationNumber}`;
+    return `${this.#getBaseUrl(
+      this.sheet
+    )}&congregation_number=${congregationNumber}`;
   }
 
   #saveAsynStorage(data, congregationNumber = null) {
-    const key = congregationNumber ? `${this.keyStorage}_${congregationNumber}` : this.keyStorage;
+    const key = congregationNumber
+      ? `${this.keyStorage}_${congregationNumber}`
+      : this.keyStorage;
     localStorage.setItem(key, JSON.stringify(data));
   }
 
   #getAsynStorage(congregationNumber = null) {
-    const key = congregationNumber ? `${this.keyStorage}_${congregationNumber}` : this.keyStorage;
+    const key = congregationNumber
+      ? `${this.keyStorage}_${congregationNumber}`
+      : this.keyStorage;
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   }
-
-
 
   /* ======= MÉTODOS PÚBLICOS ======= */
   async get() {
@@ -63,19 +66,51 @@ export class RestApiBaseService {
     return data;
   }
 
-  async post(method, body) {
-    const res = await fetch(`${this.#getBaseUrl(this.sheet)}&method=${method}`, {
+  async #postData(method, body) {
+    // 🔍 LOG DO OBJETO ORIGINAL
+    console.log("[POST][BODY - object]:", body);
+
+    // 🔍 LOG DO JSON QUE VAI SER ENVIADO
+    const jsonBody = JSON.stringify(body);
+    console.log("[POST][BODY - json]:", jsonBody);
+
+    const url = `${this.#getBaseUrl(this.sheet)}&method=${method}`;
+    console.log("[POST][URL]:", url);
+
+    const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      redirect: "follow",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body: jsonBody,
     });
-    if (!res.ok) throw new Error("POST error");
-    return res.json();
-  }
-  
-  clearStorage(congregationNumber = null) {
-    const key = congregationNumber ? `${this.keyStorage}_${congregationNumber}` : this.keyStorage;
-    localStorage.removeItem(key);
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("[POST][ERROR RESPONSE]:", text);
+      throw new Error(`POST error: ${res.status} - ${text}`);
+    }
+
+    const responseJson = await res.json();
+    console.log("[POST][RESPONSE]:", responseJson);
+
+    return responseJson;
   }
 
+  async post(body) {
+    return this.#postData("POST", body);
+  }
+
+  async put(body) {
+    return this.#postData("PUT", body);
+  }
+
+  clearStorage(congregationNumber = null) {
+    const key = congregationNumber
+      ? `${this.keyStorage}_${congregationNumber}`
+      : this.keyStorage;
+    localStorage.removeItem(key);
+  }
 }

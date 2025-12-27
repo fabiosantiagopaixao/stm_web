@@ -6,9 +6,8 @@ export function showLoading(container = null, message = "Loading...") {
     container.innerHTML = `
       <div class="d-flex flex-column justify-content-center align-items-center text-center"
            style="height: 100%; min-height: 200px;">
-        <img src="./assets/logo.png" alt="Logo" style="max-width:120px; margin-bottom:20px;">
         <div class="spinner-border text-primary mb-3" role="status">
-          <span class="visually-hidden">Loading...</span>
+          <span class="visually-hidden"></span>
         </div>
         <div class="fw-bold text-primary">${message}</div>
       </div>
@@ -33,9 +32,8 @@ export function showLoading(container = null, message = "Loading...") {
       document.body.appendChild(overlay);
     }
     overlay.innerHTML = `
-      <img src="./assets/logo.png" alt="Logo" style="max-width:120px; margin-bottom:20px;">
       <div class="spinner-border text-primary mb-3" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden"></span>
       </div>
       <div class="fw-bold text-primary">${message}</div>
     `;

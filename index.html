@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>Login</title>
 
-    <link rel="icon" type="image/png" href="assets/logo.png" />
+    <link rel="icon" type="image/png" href="img/logo.png" />
 
     <!-- Bootstrap -->
     <link
@@ -31,7 +31,7 @@
     
     <script type="module">
       import { CongregationService } from "./src/api/services/CongregationService.js";
-      import { LoginService } from "./src/api/services/LoginService.js";
+      import { LoginService } from "./src/api/LoginService.js";
       import { showLoading, hideLoading } from "./src/components/loading.js";
       import { showDialog } from "./src/components/dialog.js";
 
@@ -40,7 +40,7 @@
 
       async function init() {
         if (loginService.isLogged()) {
-          window.location.href = "./src/pages/home.html";
+          window.location.href = "home.html";
           return;
         }
 
@@ -58,7 +58,7 @@
         container.innerHTML = `
           <div class="card p-4 shadow" style="width: 360px;">
             <div class="text-center mb-3">
-              <img src="./assets/logo.png" alt="Logo" style="max-width:120px;">
+              <img src="img/logo.png" alt="Logo" style="max-width:120px;">
             </div>
 
             <h4 class="text-center text-primary mb-4">Login</h4>
