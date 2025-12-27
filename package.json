@@ -5,11 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "deploy": "gh-pages -d dist",
-    "deploy:es": "gh-pages -d dist -b es",
-    "deploy:ptBR": "gh-pages -d dist -b ptBr",
-    "deploy:en": "gh-pages -d dist -b en",
-    "gh:delete": "git branch -D gh-pages || true && git push origin --delete gh-pages"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "bootstrap": "^5.3.3"
