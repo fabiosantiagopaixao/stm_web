@@ -67,36 +67,42 @@ export class RestApiBaseService {
   }
 
   async #postData(method, body) {
-    // 🔍 LOG DO OBJETO ORIGINAL
+    // 🔍 Log do objeto original
     console.log("[POST][BODY - object]:", body);
 
-    // 🔍 LOG DO JSON QUE VAI SER ENVIADO
+    // 🔍 JSON que vai ser enviado
     const jsonBody = JSON.stringify(body);
     console.log("[POST][BODY - json]:", jsonBody);
 
-    const url = `${this.#getBaseUrl(this.sheet)}&method=${method}`;
-    console.log("[POST][URL]:", url);
+    // 🔹 URL: no localhost, usamos proxy (/api), em produção usa a URL real
+    const baseUrl = import.meta.env.DEV
+      ? `/api?sheet=${this.sheet}&method=${method}` // proxy do Vite
+      : `${this.#getBaseUrl(this.sheet)}&method=${method}`;
+    console.log("[POST][URL]:", baseUrl);
 
-    const res = await fetch(url, {
-      method: "POST",
-      redirect: "follow",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "*/*",
-      },
-      body: jsonBody,
-    });
+    try {
+      const res = await fetch(baseUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonBody,
+      });
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("[POST][ERROR RESPONSE]:", text);
-      throw new Error(`POST error: ${res.status} - ${text}`);
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("[POST][ERROR RESPONSE]:", text);
+        throw new Error(`POST error: ${res.status} - ${text}`);
+      }
+
+      const responseJson = await res.json();
+      console.log("[POST][RESPONSE]:", responseJson);
+
+      return responseJson;
+    } catch (err) {
+      console.error("[POST][FETCH ERROR]:", err);
+      throw err;
     }
-
-    const responseJson = await res.json();
-    console.log("[POST][RESPONSE]:", responseJson);
-
-    return responseJson;
   }
 
   async post(body) {

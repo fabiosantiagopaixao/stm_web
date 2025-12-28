@@ -33,10 +33,24 @@ function clearInvalid(input) {
 
 /* ================= Component ================= */
 
-export function renderUserEdit(container, userData, readonlyMode = false) {
+export function renderUserEdit(
+  container,
+  userData = null,
+  readonlyMode = false
+) {
+  let isCreating = (userData = null);
+
+  const user = userData || {
+    name: "",
+    user: "",
+    password: "",
+    type: "PUBLISHER", // tipo padrão
+    active: true,
+  };
+
   document.getElementById("pageTitle").innerText = `${
-    readonlyMode ? "View User" : "Edit User"
-  } - ${userData.name}`;
+    readonlyMode ? "View User" : isCreating ? "Create User" : "Edit User"
+  } - ${user.name}`;
 
   container.innerHTML = `
     <div class="card shadow mb-4">
@@ -47,15 +61,15 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="name"
-                     value="${userData.name}" ${readonlyMode ? "disabled" : ""}>
+              <input type="text" class="form-control" id="name" placeholder="Insira su Nombre"
+                     value="${user.name}" ${readonlyMode ? "disabled" : ""}>
               <div class="invalid-feedback">El nombre es obligatorio</div>
             </div>
 
             <div class="col-md-6">
               <label class="form-label">Usuario</label>
-              <input type="text" class="form-control" id="user"
-                     value="${userData.user}" ${readonlyMode ? "disabled" : ""}>
+              <input type="text" class="form-control" id="user" placeholder="Insira su Usuario"
+                     value="${user.user}" ${readonlyMode ? "disabled" : ""}>
               <div class="invalid-feedback">El usuario es obligatorio</div>
             </div>
           </div>
@@ -64,10 +78,8 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="password"
-                     value="${userData.password}" ${
-    readonlyMode ? "disabled" : ""
-  }>
+              <input type="password" class="form-control" id="password" placeholder="Insira su Contraseña"
+                     value="${user.password}" ${readonlyMode ? "disabled" : ""}>
               <div class="invalid-feedback">La contraseña es obligatoria</div>
             </div>
           </div>
@@ -85,7 +97,7 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
                            name="type"
                            id="type_${type}"
                            value="${type}"
-                           ${userData.type === type ? "checked" : ""}
+                           ${user.type === type ? "checked" : ""}
                            ${readonlyMode ? "disabled" : ""}>
                     <label class="form-check-label" for="type_${type}">
                       ${userTypeToLabel(type)}
@@ -102,7 +114,7 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check mt-4">
                 <input class="form-check-input" type="checkbox" id="active"
-                       ${userData.active ? "checked" : ""}
+                       ${user.active ? "checked" : ""}
                        ${readonlyMode ? "disabled" : ""}>
                 <label class="form-check-label" for="active">
                   Activo
@@ -148,13 +160,13 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
     let hasError = false;
 
     const name = form.querySelector("#name");
-    const user = form.querySelector("#user");
+    const userSelector = form.querySelector("#user");
     const password = form.querySelector("#password");
     const active = form.querySelector("#active");
     const typeChecked = form.querySelector('input[name="type"]:checked');
     const typeError = form.querySelector("#typeError");
 
-    [name, user, password, active].forEach(clearInvalid);
+    [name, userSelector, password, active].forEach(clearInvalid);
     typeError.style.display = "none";
 
     if (!name.value.trim()) {
@@ -162,8 +174,8 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
       hasError = true;
     }
 
-    if (!user.value.trim()) {
-      setInvalid(user);
+    if (!userSelector.value.trim()) {
+      setInvalid(userSelector);
       hasError = true;
     }
 
@@ -186,9 +198,9 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
 
     const loginService = new LoginService();
     const updatedUser = {
-      id: userData.id ?? null,
+      id: user.id ?? null,
       name: name.value.trim(),
-      user: user.value.trim(),
+      user: userSelector.value.trim(),
       password: password.value.trim(),
       type: typeChecked.value,
       active: active.checked,
