@@ -29,7 +29,7 @@ import{L as p,s as u,C as y,h as r}from"./loading-Dc4beW_t.js";function m({type:
   `,document.body.appendChild(o);const g=()=>o.remove();document.getElementById("dialogOkBtn").addEventListener("click",()=>{g(),typeof e=="function"&&e()}),s&&document.getElementById("dialogNoBtn").addEventListener("click",g)}const v=document.getElementById("loginContainer"),f=new p;async function w(){if(f.isLogged()){window.location.href="home.html";return}await h()}async function h(d){u(v,"STM - Loading data...");const i=await new y().get();v.innerHTML=`
           <div class="card p-4 shadow" style="width: 360px;">
             <div class="text-center mb-3">
-              <img src="img/logo.png" alt="Logo" style="max-width:120px;">
+              <img src="/stm_web/img/logo.png" alt="Logo" style="max-width:120px;">
             </div>
 
             <h4 class="text-center text-primary mb-4">Login</h4>
