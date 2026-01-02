@@ -1,14 +1,42 @@
-import { RestApiBaseService } from "./base/RestApiBaseService.js";
+import { GetApiBaseService } from "./base/GetApiBaseService.js";
+import { PostService } from "./base/PostService.js";
+import { ApiBaseService } from "./base/ApiBaseService.js";
 
-export class UserService extends RestApiBaseService {
+export class UserService {
   constructor() {
-    super("user");
+    const nameSheet = "user";
+    this.loggedUser = this.#getLoggedUser();
+
+    this.getApi = new GetApiBaseService(nameSheet);
+    this.writeApi = new PostService(nameSheet);
   }
 
-  saveUpdate(user) {
-    if (user.id) {
-      return this.put(user);
+  /* ========= READ ========= */
+  async getByCongregation(congregationNumber) {
+    if (this.loggedUser) {
+      return this.getApi.getByCongregation(this.loggedUser.congregation_number);
     }
-    return this.post(user);
+    return this.getApi.getByCongregation(congregationNumber);
+  }
+
+  #getLoggedUser() {
+    const data = localStorage.getItem("stm_logged_user");
+    return data ? JSON.parse(data) : null;
+  }
+
+  /* ========= WRITE ========= */
+  async saveUpdate(user) {
+    if (user.id) {
+      return this.writeApi.put(user);
+    }
+    return this.writeApi.post(user);
+  }
+
+  async delete(user) {
+    return this.writeApi.delete(user);
+  }
+
+  static clearAllCacheLogout() {
+    ApiBaseService.clearAllCacheLogout();
   }
 }

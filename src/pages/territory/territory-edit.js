@@ -1,116 +1,241 @@
-import { UserService } from "../../api/services/UserService.js";
+import { TerritoryService } from "../../api/services/TerritoryService.js";
 import { showLoading, hideLoading } from "../../components/loading.js";
+import { loadTerritory } from "./index.js";
+import { LoginService } from "../../api/LoginService.js";
+import { renderAlertModal } from "../../components/renderAlertModal.js";
+import { territoryTypeToLabel } from "./shared-territory.js";
+import { removeAddButton } from "../util/PagesUtil.js";
+import { renderSearchableCheckbox } from "../../components/searchBox.js";
 
-/**
- * Renderiza a página de edição ou visualização de usuário
- * @param {HTMLElement} container 
- * @param {Object} userData - dados do usuário
- * @param {boolean} readonlyMode - se true, todos inputs ficam desabilitados
- */
-export function renderTerritoryEdit(container, userData, readonlyMode = false) {
-  const content = document.getElementById("card-data");
-  let title =  readonlyMode ? "View User" : "Edit User";
-  title = title + " - " + userData.name; 
-  document.getElementById("pageTitle").innerText = title;
+/* ================= Helpers ================= */
+const TERRITORY_TYPES = ["HOUSE_TO_HOUSE", "PHONE"];
+
+function setInvalid(input) {
+  input.classList.add("is-invalid");
+}
+
+function clearInvalid(input) {
+  input.classList.remove("is-invalid");
+}
+
+/* ================= Component ================= */
+export function renderTerritoryEdit(
+  container,
+  territoryData,
+  readonlyMode = false
+) {
+  const newTerritory = territoryData.id === null;
+
+  document.getElementById("pageTitle").innerText = newTerritory
+    ? "Nuevo territorio"
+    : readonlyMode
+    ? `Ver territorio - ${territoryData.name}`
+    : `Editar territorio - ${territoryData.name}`;
 
   container.innerHTML = `
-    <div class="card shadow mb-4">
-     
-      <div class="card-body">
-        <form id="userForm">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="congregation_name" class="form-label">Congregation Name</label>
-              <input type="text" class="form-control" id="congregation_name" value="${userData.congregation_name}" ${readonlyMode ? 'disabled' : ''}>
-            </div>
-            <div class="col-md-6">
-              <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" value="${userData.name}" ${readonlyMode ? 'disabled' : ''}>
-            </div>
+    <div class="card-body">
+      <form id="territoryForm" novalidate>
+
+        <!-- Name / Territory -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Número</label>
+            <input type="text" class="form-control" id="number" placeholder="Insira el número T-0001"
+                   value="${territoryData.number}" ${
+    readonlyMode || newTerritory ? "disabled" : ""
+  }>
+            <div class="invalid-feedback">El número es obligatorio</div>
           </div>
 
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="user" class="form-label">Usuario</label>
-              <input type="text" class="form-control" id="user" value="${userData.user}" ${readonlyMode ? 'disabled' : ''}>
-            </div>
-            <div class="col-md-6">
-              <label for="password" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="password" value="${userData.password}" ${readonlyMode ? 'disabled' : ''}>
-            </div>
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="name" placeholder="Insira el nombre"
+                   value="${territoryData.name}" ${
+    readonlyMode ? "disabled" : ""
+  }>
+            <div class="invalid-feedback">El nombre es obligatorio</div>
           </div>
+        </div>
 
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="type" class="form-label">Type</label>
-              <input type="text" class="form-control" id="type" value="${userData.type}" ${readonlyMode ? 'disabled' : ''}>
-            </div>
-            <div class="col-md-6 d-flex align-items-center">
-              <div class="form-check mt-4">
-                <input class="form-check-input" type="checkbox" id="active" ${userData.active ? 'checked' : ''} ${readonlyMode ? 'disabled' : ''}>
-                <label class="form-check-label" for="active">
-                  Activo
-                </label>
+        <!-- Type -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Tipo</label>
+            <div class="mt-2" id="typeGroup">
+              ${TERRITORY_TYPES.map(
+                (type) => `
+                <div class="form-check">
+                  <input class="form-check-input"
+                         type="radio"
+                         name="type"
+                         id="type_${type}"
+                         value="${type}"
+                         ${territoryData.type === type ? "checked" : ""}
+                         ${readonlyMode ? "disabled" : ""}>
+                  <label class="form-check-label" for="type_${type}">
+                    ${territoryTypeToLabel(type)}
+                  </label>
+                </div>
+              `
+              ).join("")}
+              <div class="invalid-feedback" id="typeError">
+                El tipo de usuario es obligatorio
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Actions -->
-          <div class="row mt-4">
-            <div class="col-md-12 d-flex justify-content-end gap-2">
-              ${!readonlyMode ? `
-              <button type="submit" class="btn btn-primary" style="margin-right: 10px">
-                <i class="fas fa-save"></i> Salvar
-              </button>` : ""}
-              <button type="button" class="btn btn-success" id="btnBack">
-                <i class="fas fa-arrow-left"></i> Voltar
-              </button>
-            </div>
+        <!-- Addresses searchable -->
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label class="form-label">Dirreciones</label>
+            <div id="addressesContainer"></div>
+            <div class="invalid-feedback" id="addressesError">Selecione pelo menos um endereço</div>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="row mt-4">
+          <div class="col-md-12 d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" id="btnBack">
+              <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            ${
+              !readonlyMode
+                ? `<button type="submit" class="btn btn-primary">
+                     <i class="fas fa-save"></i> ${
+                       newTerritory ? "Salvar" : "Atualizar"
+                     }
+                   </button>`
+                : ""
+            }
+          </div>
+        </div>
+
+      </form>
     </div>
   `;
 
-  // Eventos
-  const form = container.querySelector("#userForm");
-  form.addEventListener("submit", async e => {
+  removeAddButton();
+
+  /* ================= Addresses component ================= */
+  let addressesList = territoryData.addressesList || [
+    {
+      id: 1,
+      name: "John Doe",
+      gender: "M",
+      type: "HOUSE_TO_HOUSE",
+      age_type: "ADULT",
+      address: "123 Main St",
+      selected: false,
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      gender: "F",
+      type: "HOUSE_TO_HOUSE",
+      age_type: "ADULT",
+      address: "456 Oak St",
+      selected: true,
+    },
+    {
+      id: 3,
+      name: "Alice Johnson",
+      gender: "F",
+      type: "APARTMENT",
+      age_type: "CHILD",
+      address: "789 Pine St",
+      selected: false,
+    },
+  ];
+
+  // marca os endereços já selecionados
+  if (territoryData.addresses) {
+    addressesList.forEach((item) => {
+      item.selected = territoryData.addresses.includes(item.id);
+    });
+  }
+
+  renderSearchableCheckbox({
+    containerId: "addressesContainer",
+    items: addressesList,
+    onChange: (updatedItems) => {
+      addressesList = updatedItems;
+    },
+  });
+
+  /* ================= Validation & Submit ================= */
+  const form = container.querySelector("#territoryForm");
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (readonlyMode) return;
 
-    const updatedUser = {
-      id: userData.id,
-      congregation_name: form.querySelector("#congregation_name").value,
-      name: form.querySelector("#name").value,
-      user: form.querySelector("#user").value,
-      password: form.querySelector("#password").value,
-      type: form.querySelector("#type").value,
-      active: form.querySelector("#active").checked
-    };
+    let hasError = false;
 
-    showLoading(container, "Saving user...");
-    const service = new UserService();
-    await service.update(updatedUser); // supondo que exista o método update
-    hideLoading(container);
-    alert("User saved successfully!");
+    const name = form.querySelector("#name");
+    const number = form.querySelector("#number");
+    const typeChecked = form.querySelector('input[name="type"]:checked');
+    const typeError = form.querySelector("#typeError");
+    const addressesError = form.querySelector("#addressesError");
+
+    [name, number].forEach(clearInvalid);
+    typeError.style.display = "none";
+    addressesError.style.display = "none";
+
+    if (!name.value.trim()) {
+      setInvalid(name);
+      hasError = true;
+    }
+    if (!typeChecked) {
+      typeError.style.display = "block";
+      hasError = true;
+    }
+    if (!addressesList.some((a) => a.selected)) {
+      addressesError.style.display = "block";
+      hasError = true;
+    }
+    if (hasError) return;
+
+    try {
+      const service = new TerritoryService();
+      const loginService = new LoginService();
+
+      const updatedTerritory = {
+        id: territoryData.id ?? null,
+        number: newTerritory ? generateNumber() : number.value,
+        name: name.value.trim(),
+        type: typeChecked.value,
+        addresses: addressesList.filter((a) => a.selected).map((a) => a.id),
+        congregation_number:
+          loginService.getLoggedTerritory().congregation_number,
+      };
+
+      showLoading(container, "Saving territory...");
+      await service.saveUpdate(updatedTerritory);
+
+      renderAlertModal(document.body, {
+        type: "INFO",
+        title: "Info",
+        message: "Territorio salvo com sucesso!",
+      }).modal("show");
+      loadTerritory();
+    } catch (error) {
+      console.error("Error saving territory:", error);
+      renderAlertModal(document.body, {
+        type: "ERROR",
+        title: "Error",
+        message: "Ocorreu um erro ao salvar território!",
+      }).modal("show");
+    } finally {
+      hideLoading();
+    }
   });
 
-  container.querySelector("#btnBack").addEventListener("click", () => {
-    window.history.back(); // ou redireciona para a lista de usuários
-  });
+  container
+    .querySelector("#btnBack")
+    .addEventListener("click", () => loadTerritory());
+
+  function generateNumber() {
+    return territoryData.number ?? "T-0001"; // Lógica simples de geração
+  }
 }
-
-// Exemplo de uso:
-const content = document.getElementById("card-data");
-const userData = {
-  "id": 2,
-  "congregation_number": 4655,
-  "congregation_name": "Cerro Rico Lenguaje de Señas",
-  "name": "Sup. Circuito",
-  "user": "super_circuito",
-  "password": "1234560",
-  "type": "CIRCUIT_OVERSEER",
-  "active": true
-};
-
-renderTerritoryEdit(content, userData, false); // false = modo edição, true = modo visualização

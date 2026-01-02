@@ -3,9 +3,9 @@ import { showLoading, hideLoading } from "../../components/loading.js";
 import { loadUser } from "./index.js";
 import { LoginService } from "../../api/LoginService.js";
 import { renderAlertModal } from "../../components/renderAlertModal.js"; // ✅ novo modal
+import { removeAddButton } from "../util/PagesUtil.js";
 
 /* ================= Helpers ================= */
-
 const USER_TYPES = [
   "PUBLISHER",
   "ADMINISTRATOR",
@@ -33,27 +33,17 @@ function clearInvalid(input) {
 
 /* ================= Component ================= */
 
-export function renderUserEdit(
-  container,
-  userData = null,
-  readonlyMode = false
-) {
-  let isCreating = (userData = null);
+export function renderUserEdit(container, userData, readonlyMode = false) {
+  const newUser = userData.id === null;
 
-  const user = userData || {
-    name: "",
-    user: "",
-    password: "",
-    type: "PUBLISHER", // tipo padrão
-    active: true,
-  };
-
-  document.getElementById("pageTitle").innerText = `${
-    readonlyMode ? "View User" : isCreating ? "Create User" : "Edit User"
-  } - ${user.name}`;
+  document.getElementById("pageTitle").innerText = newUser
+    ? "Nuevo usuario"
+    : readonlyMode
+    ? `View User - ${userData.name}`
+    : `Edit User - ${userData.name}`;
 
   container.innerHTML = `
-    <div class="card shadow mb-4">
+   
       <div class="card-body">
         <form id="userForm" novalidate>
 
@@ -61,15 +51,15 @@ export function renderUserEdit(
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="name" placeholder="Insira su Nombre"
-                     value="${user.name}" ${readonlyMode ? "disabled" : ""}>
+              <input type="text" class="form-control" id="name" placeholder="Insira su nombre"
+                     value="${userData.name}" ${readonlyMode ? "disabled" : ""}>
               <div class="invalid-feedback">El nombre es obligatorio</div>
             </div>
 
             <div class="col-md-6">
               <label class="form-label">Usuario</label>
-              <input type="text" class="form-control" id="user" placeholder="Insira su Usuario"
-                     value="${user.user}" ${readonlyMode ? "disabled" : ""}>
+              <input type="text" class="form-control" id="user" placeholder="Insira su usuario"
+                     value="${userData.user}" ${readonlyMode ? "disabled" : ""}>
               <div class="invalid-feedback">El usuario es obligatorio</div>
             </div>
           </div>
@@ -78,8 +68,10 @@ export function renderUserEdit(
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="password" placeholder="Insira su Contraseña"
-                     value="${user.password}" ${readonlyMode ? "disabled" : ""}>
+              <input type="password" class="form-control" id="password" placeholder="Insira su contraseña"
+                     value="${userData.password}" ${
+    readonlyMode ? "disabled" : ""
+  }>
               <div class="invalid-feedback">La contraseña es obligatoria</div>
             </div>
           </div>
@@ -97,7 +89,7 @@ export function renderUserEdit(
                            name="type"
                            id="type_${type}"
                            value="${type}"
-                           ${user.type === type ? "checked" : ""}
+                           ${userData.type === type ? "checked" : ""}
                            ${readonlyMode ? "disabled" : ""}>
                     <label class="form-check-label" for="type_${type}">
                       ${userTypeToLabel(type)}
@@ -114,7 +106,7 @@ export function renderUserEdit(
             <div class="col-md-6 d-flex align-items-center">
               <div class="form-check mt-4">
                 <input class="form-check-input" type="checkbox" id="active"
-                       ${user.active ? "checked" : ""}
+                       ${userData.active ? "checked" : ""}
                        ${readonlyMode ? "disabled" : ""}>
                 <label class="form-check-label" for="active">
                   Activo
@@ -129,30 +121,30 @@ export function renderUserEdit(
           <!-- Actions -->
           <div class="row mt-4">
             <div class="col-md-12 d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" id="btnBack">
+                <i class="fas fa-arrow-left"></i> Voltar
+              </button>
               ${
                 !readonlyMode
                   ? `
                <button type="submit" class="btn btn-primary" style="margin-right: 10px">
-                  <i class="fas fa-save"></i> Salvar
+                  <i class="fas fa-save"></i> ${
+                    newUser ? " Salvar" : " Actualizar"
+                  }
                 </button>
               `
                   : ""
               }
-              <button type="button" class="btn btn-success" id="btnBack">
-                <i class="fas fa-arrow-left"></i> Voltar
-              </button>
             </div>
           </div>
 
         </form>
       </div>
-    </div>
   `;
 
   /* ================= Validation & Submit ================= */
-
+  removeAddButton();
   const form = container.querySelector("#userForm");
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (readonlyMode) return;
@@ -160,13 +152,13 @@ export function renderUserEdit(
     let hasError = false;
 
     const name = form.querySelector("#name");
-    const userSelector = form.querySelector("#user");
+    const user = form.querySelector("#user");
     const password = form.querySelector("#password");
     const active = form.querySelector("#active");
     const typeChecked = form.querySelector('input[name="type"]:checked');
     const typeError = form.querySelector("#typeError");
 
-    [name, userSelector, password, active].forEach(clearInvalid);
+    [name, user, password, active].forEach(clearInvalid);
     typeError.style.display = "none";
 
     if (!name.value.trim()) {
@@ -174,8 +166,8 @@ export function renderUserEdit(
       hasError = true;
     }
 
-    if (!userSelector.value.trim()) {
-      setInvalid(userSelector);
+    if (!user.value.trim()) {
+      setInvalid(user);
       hasError = true;
     }
 
@@ -189,25 +181,20 @@ export function renderUserEdit(
       hasError = true;
     }
 
-    if (!active.checked) {
-      setInvalid(active);
-      hasError = true;
-    }
-
     if (hasError) return;
 
     const loginService = new LoginService();
     const updatedUser = {
-      id: user.id ?? null,
+      id: userData.id ?? null,
       name: name.value.trim(),
-      user: userSelector.value.trim(),
+      user: user.value.trim(),
       password: password.value.trim(),
       type: typeChecked.value,
       active: active.checked,
       congregation_number: loginService.getLoggedUser().congregation_number,
     };
 
-    showLoading(null, "Saving user...");
+    showLoading(container, "Saving user...");
 
     try {
       const service = new UserService();
