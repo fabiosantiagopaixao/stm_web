@@ -21,15 +21,4 @@ export default defineConfig({
       pages: resolve(__dirname, "./src/pages"),
     },
   },
-
-  server: {
-    proxy: {
-      "/api": {
-        target:
-          "https://script.google.com/macros/s/AKfycbwR3WVAPyUhzXVUniBlHvKtkcOA7ORiIPZGf4YzD9sCuDKSpbhqYw_IK4nvrqnelBetVw/exec",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
 });
