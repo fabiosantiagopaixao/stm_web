@@ -1,3 +1,18 @@
+export const genderMap = {
+  Male: {
+    CHILD: "child_man.png",
+    YOUNG: "young_man.png",
+    ADULT: "man.png",
+    SENIOR: "senior_man.png",
+  },
+  Female: {
+    CHILD: "child_woman.png",
+    YOUNG: "young_woman.png",
+    ADULT: "woman.png",
+    SENIOR: "senior_woman.png",
+  },
+};
+
 export function removeAddButton() {
   const btnAdd = document.getElementById("btnAdd");
   if (!btnAdd) return;
@@ -39,4 +54,11 @@ export function enableEnterNavigation(fields, onLastEnter) {
       }
     });
   });
+}
+
+export function normalize(str) {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }

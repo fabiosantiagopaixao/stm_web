@@ -41,7 +41,11 @@ export class PostService extends ApiBaseService {
     return this.#request("PUT", body);
   }
 
-  delete(body) {
-    return this.#request("DELETE", body);
+  delete(id) {
+    return this.#request("DELETE", this.#createIdObject(id));
+  }
+
+  #createIdObject(id) {
+    return { id };
   }
 }

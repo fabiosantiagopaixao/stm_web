@@ -9,7 +9,7 @@ export async function loadNews() {
   document.getElementById("pageTitle").innerText = "News";
 
   // Mostra loading
-  showLoading(content, "Loading News...");
+  showLoading(content, "Loading News");
 
   const service = new UserService();
   const loginService = new LoginService();

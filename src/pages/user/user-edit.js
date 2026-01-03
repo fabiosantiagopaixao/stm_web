@@ -194,7 +194,7 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
       congregation_number: loginService.getLoggedUser().congregation_number,
     };
 
-    showLoading(container, "Saving user...");
+    showLoading(container, "Saving user");
 
     try {
       const service = new UserService();

@@ -41,7 +41,7 @@ if (!user) {
     primaryLabel: "Cerrar sesión",
     secondaryLabel: "Cancelar",
     onPrimary: () => {
-      showLoading(null, "Logout...");
+      showLoading(null, "Logout");
       loginService.logout();
       hideLoading();
       window.location.replace(`${BASE_PATH}`);

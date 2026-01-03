@@ -1,5 +1,7 @@
 // components/table.js
 import { renderButton } from "./button.js";
+import { genderMap } from "../pages/util/PagesUtil.js";
+import { normalize } from "../pages/util/PagesUtil.js";
 
 /* 🔹 BASE PATH (Vite) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";
@@ -118,7 +120,6 @@ export function renderTable({
     pageData.forEach((row) => {
       const tr = document.createElement("tr");
 
-      // 🔹 NÃO ALTERA A ESTRUTURA DAS COLUNAS
       columns.forEach((c) => {
         const td = document.createElement("td");
         if (c.width) td.style.width = c.width;
@@ -141,20 +142,6 @@ export function renderTable({
 
         if (c.key === "gender") {
           const ageType = row["age_type"];
-          const genderMap = {
-            Male: {
-              CHILD: "child_man.png",
-              YOUNG: "young_man.png",
-              ADULT: "man.png",
-              SENIOR: "senior_man.png",
-            },
-            Female: {
-              CHILD: "child_woman.png",
-              YOUNG: "young_woman.png",
-              ADULT: "woman.png",
-              SENIOR: "senior_woman.png",
-            },
-          };
           const g = cellValue === "Male" ? "Male" : "Female";
           cellValue = `<a class="photo">
             <img src="${BASE_PATH}/img/${genderMap[g][ageType]}"
@@ -299,15 +286,17 @@ export function renderTable({
     renderTableBody();
   };
 
+  // 🔹 Pesquisa sem acentuação
   searchInput.oninput = (e) => {
-    const term = e.target.value.toLowerCase();
+    const term = normalize(e.target.value);
+
     filteredData = data.filter((row) =>
-      columns.some((c) =>
-        String(row[c.key] ?? "")
-          .toLowerCase()
-          .includes(term)
-      )
+      columns.some((c) => {
+        const value = normalize(String(row[c.key] ?? ""));
+        return value.includes(term);
+      })
     );
+
     currentPage = 1;
     renderTableBody();
   };

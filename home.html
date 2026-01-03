@@ -59,7 +59,6 @@
         <!-- Brand -->
         <a
           class="sidebar-brand d-flex align-items-center justify-content-center"
-          href="#"
         >
           <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
@@ -89,6 +88,13 @@
         </li>
 
         <li class="nav-item">
+          <a class="nav-link" data-page="address" title="Direcciones" href="#">
+            <i class="fas fa-fw fa-map"></i>
+            <span>Direcciones</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
           <a
             class="nav-link"
             data-page="territory"
@@ -97,13 +103,6 @@
           >
             <i class="fas fa-fw fa-location-arrow"></i>
             <span>Territorios</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" data-page="address" title="Direcciones" href="#">
-            <i class="fas fa-fw fa-map"></i>
-            <span>Direcciones</span>
           </a>
         </li>
 
@@ -194,28 +193,6 @@
 
             <!-- Topbar Navbar -->
             <ul class="navbar-nav ml-auto">
-              <!-- Alerts -->
-              <li class="nav-item dropdown no-arrow mx-1">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  id="alertsDropdown"
-                  role="button"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  <i class="fas fa-bell fa-fw"></i>
-                  <span class="badge badge-danger badge-counter">3+</span>
-                </a>
-                <div
-                  class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                  aria-labelledby="alertsDropdown"
-                >
-                  <h6 class="dropdown-header">Alerts Center</h6>
-                </div>
-              </li>
-
               <div class="topbar-divider d-none d-sm-block"></div>
 
               <!-- User Information -->
@@ -244,8 +221,6 @@
                   class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                   aria-labelledby="userDropdown"
                 >
-                  <a class="dropdown-item" href="#">Profile</a>
-                  <a class="dropdown-item" href="#">Settings</a>
                   <div class="dropdown-divider"></div>
                   <a id="logoutTopbar" class="dropdown-item" href="#">
                     <i
@@ -300,5 +275,6 @@
     <!-- Bootstrap JS -->
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/js/sb-admin-2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

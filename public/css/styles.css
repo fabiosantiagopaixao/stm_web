@@ -116,8 +116,73 @@ td.text-end.text-nowrap {
 }
 
 label.form-check-label.custom {
-  margin-left: 30px !important;
   margin-top: 2px;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+/* Container da lista */
+.checkbox-list {
+  background-color: #ffffff;
+}
+
+/* Item individual */
+.checkbox-item {
+  padding: 10px 8px;
+  border-bottom: 1px solid #cfe2ff; /* azul claro */
+}
+
+/* Remove linha do último */
+.checkbox-item:last-child {
+  border-bottom: none;
+}
+
+/* Zebrado */
+.checkbox-item:nth-child(even) {
+  background-color: #f0f6ff; /* azul bem claro */
+}
+
+.checkbox-item:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+/* Hover (opcional, fica lindo 😄) */
+.checkbox-item:hover {
+  background-color: #e7f1ff;
+}
+
+/* Imagem */
+.checkbox-item img {
+  flex-shrink: 0;
+  width: 50px;
+  margin-left: 35px;
+}
+
+.btn,
+a.nav-link {
+  cursor: pointer !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #456bd8;
+  color: #fff;
+  font-size: 0.8em;
+}
+
+button.accordion-button.collapsed {
+  font-size: 0.8em;
+  background: #dbe4ff;
+}
+
+.accordion-body {
+  background: #f2f2f2;
+  min-height: 150px;
+}
+
+button#btnMap {
+  height: 40px;
 }
 
 /* 
@@ -132,6 +197,9 @@ label.form-check-label.custom {
     font-size: 1em;
   }
 }
+.table-responsive {
+  overflow-x: hidden !important;
+}
 
 /* 
  Smartphones em geral
@@ -144,6 +212,49 @@ label.form-check-label.custom {
   p.lead {
     font-size: 1.5em;
   }
+}
+
+.table-bordered td,
+.table-bordered th {
+  vertical-align: middle !important;
+}
+
+.invalid-feedback-custom {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 80%;
+  color: #e74a3b;
+}
+
+.gender-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  padding: 2px;
+  transition: border 0.2s;
+}
+
+.gender-option.selected {
+  border-color: blue;
+}
+
+.gender-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.gender-label {
+  margin-top: 4px;
+  text-align: center;
+}
+
+img.gender-img {
+  width: 50px;
 }
 
 /* 

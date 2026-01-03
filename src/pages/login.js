@@ -82,7 +82,7 @@ export async function renderLogin() {
 
   // 🔹 FUNÇÃO PARA CARREGAR CONGREGATIONS
   const loadCongregations = async () => {
-    showLoading(null, "Cargando congregaciones...");
+    showLoading(null, "Cargando congregaciones");
     congregationSelect.disabled = true;
     usernameInput.disabled = true;
     passwordInput.disabled = true;
@@ -215,7 +215,7 @@ function attachInputListeners() {
 /* 🔹 LOGIN */
 async function handleLogin(loginService) {
   const start = Date.now();
-  showLoading(null, "Login...");
+  showLoading(null, "Login");
 
   try {
     const congregationId = document.getElementById("congregation").value;

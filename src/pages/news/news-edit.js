@@ -103,7 +103,7 @@ export function renderNewsEdit(container, userData, readonlyMode = false) {
       active: form.querySelector("#active").checked,
     };
 
-    showLoading(container, "Saving user...");
+    showLoading(container, "Saving user");
     const service = new UserService();
     await service.update(updatedUser); // supondo que exista o método update
     hideLoading(container);

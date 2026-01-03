@@ -8,7 +8,7 @@ export async function loadReportS13() {
   document.getElementById("pageTitle").innerText = "Addresses";
 
   // Mostra loading
-  showLoading(content, "Loading Addresses...");
+  showLoading(content, "Loading Addresses");
 
   const service = new AddressService();
   const loginService = new LoginService();

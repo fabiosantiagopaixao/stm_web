@@ -10,7 +10,7 @@ export async function loadUser() {
   const content = document.getElementById("card-data");
   document.getElementById("pageTitle").innerText = "Usuarios";
 
-  showLoading(content, "Cargando Usuarios...");
+  showLoading(content, "Cargando Usuarios");
 
   const service = new UserService();
   const loginService = new LoginService();
@@ -60,7 +60,7 @@ export async function loadUser() {
 async function onClickUserActivDeactivate(user, service, container) {
   const newStatus = !user.active;
   try {
-    showLoading(container, "Actualizando status...");
+    showLoading(container, "Actualizando status");
     await service.put({ ...user, active: newStatus });
     user.active = newStatus;
 

@@ -1,4 +1,4 @@
-import { TerritoryService } from "../../api/services/TerritoryService.js";
+import { TerritoryAddressService } from "../../api/services/TerritoryAddressService.js";
 import { showLoading, hideLoading } from "../../components/loading.js";
 import { loadTerritory } from "./index.js";
 import { LoginService } from "../../api/LoginService.js";
@@ -19,7 +19,7 @@ function clearInvalid(input) {
 }
 
 /* ================= Component ================= */
-export function renderTerritoryEdit(
+export async function renderTerritoryEdit(
   container,
   territoryData,
   readonlyMode = false
@@ -36,23 +36,19 @@ export function renderTerritoryEdit(
     <div class="card-body">
       <form id="territoryForm" novalidate>
 
-        <!-- Name / Territory -->
+        <!-- Number / Name -->
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Número</label>
-            <input type="text" class="form-control" id="number" placeholder="Insira el número T-0001"
-                   value="${territoryData.number}" ${
-    readonlyMode || newTerritory ? "disabled" : ""
-  }>
-            <div class="invalid-feedback">El número es obligatorio</div>
+            <input type="text" class="form-control" id="number" value="${
+              territoryData.number ?? ""
+            }" disabled>
           </div>
-
           <div class="col-md-6">
             <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="name" placeholder="Insira el nombre"
-                   value="${territoryData.name}" ${
-    readonlyMode ? "disabled" : ""
-  }>
+            <input type="text" class="form-control" id="name" value="${
+              territoryData.name ?? ""
+            }" ${readonlyMode ? "disabled" : ""}>
             <div class="invalid-feedback">El nombre es obligatorio</div>
           </div>
         </div>
@@ -64,33 +60,28 @@ export function renderTerritoryEdit(
             <div class="mt-2" id="typeGroup">
               ${TERRITORY_TYPES.map(
                 (type) => `
-                <div class="form-check">
-                  <input class="form-check-input"
-                         type="radio"
-                         name="type"
-                         id="type_${type}"
-                         value="${type}"
-                         ${territoryData.type === type ? "checked" : ""}
-                         ${readonlyMode ? "disabled" : ""}>
-                  <label class="form-check-label" for="type_${type}">
-                    ${territoryTypeToLabel(type)}
-                  </label>
-                </div>
-              `
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="type" value="${type}" ${
+                  territoryData.type === type ? "checked" : ""
+                } ${readonlyMode ? "disabled" : ""}>
+                    <label class="form-check-label">${territoryTypeToLabel(
+                      type
+                    )}</label>
+                  </div>
+                `
               ).join("")}
-              <div class="invalid-feedback" id="typeError">
-                El tipo de usuario es obligatorio
-              </div>
+              <div class="invalid-feedback d-none" id="typeError">El tipo es obligatorio</div>
             </div>
           </div>
         </div>
 
-        <!-- Addresses searchable -->
+        <!-- Addresses -->
         <div class="row mb-3">
           <div class="col-md-12">
-            <label class="form-label">Dirreciones</label>
+            <label class="form-label">Direcciones</label>
+            <div class="invalid-feedback-custom d-none" id="addressesError">Seleccione al menos una dirección</div>
             <div id="addressesContainer"></div>
-            <div class="invalid-feedback" id="addressesError">Selecione pelo menos um endereço</div>
+            
           </div>
         </div>
 
@@ -118,124 +109,117 @@ export function renderTerritoryEdit(
 
   removeAddButton();
 
-  /* ================= Addresses component ================= */
-  let addressesList = territoryData.addressesList || [
-    {
-      id: 1,
-      name: "John Doe",
-      gender: "M",
-      type: "HOUSE_TO_HOUSE",
-      age_type: "ADULT",
-      address: "123 Main St",
-      selected: false,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      gender: "F",
-      type: "HOUSE_TO_HOUSE",
-      age_type: "ADULT",
-      address: "456 Oak St",
-      selected: true,
-    },
-    {
-      id: 3,
-      name: "Alice Johnson",
-      gender: "F",
-      type: "APARTMENT",
-      age_type: "CHILD",
-      address: "789 Pine St",
-      selected: false,
-    },
-  ];
+  /* ================= Addresses ================= */
+  const territoryAddressService = new TerritoryAddressService();
+  const containerId = "addressesContainer";
+  const containerAddress = document.getElementById(containerId);
 
-  // marca os endereços já selecionados
-  if (territoryData.addresses) {
-    addressesList.forEach((item) => {
-      item.selected = territoryData.addresses.includes(item.id);
-    });
-  }
+  showLoading(containerAddress, "Cargando direcciones");
+  let addressesList =
+    await territoryAddressService.getAddressesByTerritoryNumber(
+      territoryData.number
+    );
+  hideLoading();
+
+  // Inicializa listas de IDs
+  let selectedAddressesIds = [];
+  let deselectedAddressesIds = [];
 
   renderSearchableCheckbox({
-    containerId: "addressesContainer",
+    containerId,
     items: addressesList,
-    onChange: (updatedItems) => {
-      addressesList = updatedItems;
+    readonlyMode,
+    onChangeSelected: (ids) => {
+      selectedAddressesIds = ids;
+      console.log("IDs recém selecionados:", ids); // 🔹 log cada alteração
+    },
+    onChangeDeselected: (ids) => {
+      deselectedAddressesIds = ids;
+      console.log("IDs desmarcados:", ids); // 🔹 log cada alteração
     },
   });
 
   /* ================= Validation & Submit ================= */
   const form = container.querySelector("#territoryForm");
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (readonlyMode) return;
 
     let hasError = false;
-
     const name = form.querySelector("#name");
-    const number = form.querySelector("#number");
     const typeChecked = form.querySelector('input[name="type"]:checked');
     const typeError = form.querySelector("#typeError");
     const addressesError = form.querySelector("#addressesError");
 
-    [name, number].forEach(clearInvalid);
-    typeError.style.display = "none";
-    addressesError.style.display = "none";
+    clearInvalid(name);
+    typeError.classList.add("d-none");
+    addressesError.classList.add("d-none");
 
     if (!name.value.trim()) {
       setInvalid(name);
       hasError = true;
     }
     if (!typeChecked) {
-      typeError.style.display = "block";
+      typeError.classList.remove("d-none");
       hasError = true;
     }
     if (!addressesList.some((a) => a.selected)) {
-      addressesError.style.display = "block";
+      addressesError.classList.remove("d-none");
       hasError = true;
     }
+
     if (hasError) return;
 
     try {
-      const service = new TerritoryService();
       const loginService = new LoginService();
+      const numberTerritory =
+        await territoryAddressService.getLastNumberPlus1();
 
       const updatedTerritory = {
-        id: territoryData.id ?? null,
-        number: newTerritory ? generateNumber() : number.value,
+        id: territoryData.id,
+        number: newTerritory ? numberTerritory : territoryData.number,
         name: name.value.trim(),
         type: typeChecked.value,
         addresses: addressesList.filter((a) => a.selected).map((a) => a.id),
-        congregation_number:
-          loginService.getLoggedTerritory().congregation_number,
+        congregation_number: loginService.getLoggedUser().congregation_number,
       };
 
-      showLoading(container, "Saving territory...");
-      await service.saveUpdate(updatedTerritory);
+      showLoading(
+        container,
+        newTerritory ? "Saving territory" : "Actualizando territorio"
+      );
+      await territoryAddressService.saveUpdateAllData(
+        updatedTerritory,
+        selectedAddressesIds,
+        deselectedAddressesIds
+      );
 
       renderAlertModal(document.body, {
         type: "INFO",
-        title: "Info",
-        message: "Territorio salvo com sucesso!",
+        title: newTerritory ? "Salvar Territorio" : "Actualizar territorio",
+        message: newTerritory
+          ? "Territorio salvo com sucesso!"
+          : "Territorio actualizado com sucesso!",
       }).modal("show");
+
       loadTerritory();
     } catch (error) {
-      console.error("Error saving territory:", error);
+      console.error(error);
+      hideLoading();
       renderAlertModal(document.body, {
         type: "ERROR",
-        title: "Error",
-        message: "Ocorreu um erro ao salvar território!",
+        title: newTerritory ? "Salvar Territorio" : "Actualizar Territorio",
+        message: newTerritory
+          ? "Ocorreu um erro ao salvar territorio!"
+          : "Ocorreu um erro ao actulizar territorio!",
       }).modal("show");
     } finally {
       hideLoading();
     }
   });
 
-  container
-    .querySelector("#btnBack")
-    .addEventListener("click", () => loadTerritory());
-
-  function generateNumber() {
-    return territoryData.number ?? "T-0001"; // Lógica simples de geração
-  }
+  container.querySelector("#btnBack").addEventListener("click", () => {
+    loadTerritory();
+  });
 }

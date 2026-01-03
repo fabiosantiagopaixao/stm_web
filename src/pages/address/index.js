@@ -8,7 +8,7 @@ export async function loadAddress() {
   const content = document.getElementById("card-data");
   document.getElementById("pageTitle").innerText = "Direcciones";
 
-  showLoading(content, "Cargando Direcciones...");
+  showLoading(content, "Cargando Direcciones");
 
   const service = new AddressService();
   const loginService = new LoginService();

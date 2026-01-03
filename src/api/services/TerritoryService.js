@@ -22,23 +22,6 @@ export class TerritoryService {
     return data.find((territory) => territory.number === number) || null;
   }
 
-  async getLastNumberPlus1() {
-    this.getApi.clearStorage();
-    const data = await this.getByCongregation();
-
-    // Extrai os números removendo "T-" e converte para number
-    const numbers = data
-      .map((item) => item.number)
-      .filter(Boolean)
-      .map((value) => Number(value.replace("T-", "")))
-      .filter((n) => !isNaN(n));
-
-    const maxNumber = numbers.length ? Math.max(...numbers) : 0;
-
-    const nextNumber = maxNumber + 1;
-    return `T-${String(nextNumber).padStart(4, "0")}`;
-  }
-
   /* ========= WRITE ========= */
   async saveUpdate(territory) {
     if (territory.id) {
@@ -47,7 +30,7 @@ export class TerritoryService {
     return this.writeApi.post(territory);
   }
 
-  async delete(territory) {
-    return this.writeApi.delete(territory);
+  async delete(id) {
+    return this.writeApi.delete(id);
   }
 }

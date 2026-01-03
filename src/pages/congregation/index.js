@@ -8,7 +8,7 @@ export async function loadCongregation() {
   document.getElementById("pageTitle").innerText = "Congregations";
 
   // Mostra loading
-  showLoading(content, "Loading Congregations...");
+  showLoading(content, "Loading Congregations");
 
   const service = new CongregationService();
   const loginService = new LoginService();

@@ -1,7 +1,7 @@
-export function showLoading(container = null, message = "Loading...") {
+export function showLoading(container = null, message = "Loading") {
   if (container) {
     container.innerHTML = `
-      <div class="d-flex flex-column justify-content-center align-items-center text-center"
+      <div id="app-loading-overlay" class="d-flex flex-column justify-content-center align-items-center text-center"
            style="height: 100%; min-height: 200px;">
         <div class="spinner-border text-primary mb-3"></div>
         <div class="fw-bold text-primary">${message}</div>
