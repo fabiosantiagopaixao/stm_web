@@ -35,7 +35,7 @@ function init() {
 
   // não logado → renderiza login
   renderLogin(app, () => {
-    window.location.replace(`${BASE_PATH}/home`);
+    window.location.replace(`${BASE_PATH}home`);
   });
 }
 
