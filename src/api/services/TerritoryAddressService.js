@@ -136,6 +136,15 @@ export class TerritoryAddressService {
     return items ?? []; // retorna null se não encontrou
   }
 
+  async getTerritoryAddressAddresId(addressId) {
+    const data = await this.getByCongregation();
+
+    // Retorna apenas o primeiro item que bate com os critérios
+    const items = data.filter((entry) => entry.address_id === addressId);
+
+    return items ?? []; // retorna null se não encontrou
+  }
+
   /* ========= WRITE ========= */
   async saveUpdateAllData(
     territory,
@@ -217,6 +226,15 @@ export class TerritoryAddressService {
       await this.delete(territoryAddress.id);
     }
     await this.territoryService.delete(territory.id);
+  }
+
+  async deleteAddress(address) {
+    // Bsucar lista relacionada
+    const items = await this.getTerritoryAddressAddresId(address.id);
+    for (const territoryAddress of items) {
+      await this.delete(territoryAddress.id);
+    }
+    await this.addressService.delete(address.id);
   }
 
   async delete(id) {

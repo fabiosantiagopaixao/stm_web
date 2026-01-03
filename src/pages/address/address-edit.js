@@ -1,6 +1,13 @@
 import { removeAddButton } from "../util/PagesUtil";
 import { translate } from "../util/TranslateUtil";
+import { AddressService } from "../../api/services/AddressService.js";
+import { showLoading, hideLoading } from "../../components/loading.js";
+import { renderContacts } from "../../components/contacts.js";
+import { loadAddress } from "./index.js";
+import { LoginService } from "../../api/LoginService.js";
+import { renderAlertModal } from "../../components/renderAlertModal.js"; // ✅ novo modal
 
+/* =================== CONSTANTS =================== */
 export const AGE_TYPES = [
   { value: "CHILD", label: translate("CHILD") },
   { value: "YOUNG", label: translate("YOUNG") },
@@ -25,79 +32,35 @@ export const STATUS_TYPES = [
 function setInvalid(input) {
   input.classList.add("is-invalid");
 }
-
 function clearInvalid(input) {
   input.classList.remove("is-invalid");
 }
 
-/* ================= Contacts Component ================= */
-export function renderContactsComponent(
-  container,
-  phoneString = "",
-  readonly = false,
-  onChange = null
-) {
-  container.innerHTML = "";
-  const list = [];
+/* ================= Navigation ================= */
+function goBackToAddresses() {
+  window.location.replace(
+    (import.meta.env.BASE_URL || "/").replace(/([^:]\/)\/+/g, "$1") + "home"
+  );
+}
 
-  if (phoneString) {
-    phoneString.split("-").forEach((entry) => {
-      const [name, phone] = entry.split("|");
-      if (name && phone) list.push({ name, phone });
+/* ================= Save ================= */
+async function saveAddress(container, data) {
+  try {
+    showLoading(container, "Guardando dirección");
+    const service = new AddressService();
+    await service.saveUpdate(data);
+    loadAddress();
+  } catch (error) {
+    console.error("Error saving address:", error);
+
+    renderAlertModal(document.body, {
+      type: "ERROR",
+      title: "Error",
+      message: "¡Se produjo un error al guardar la dirección!",
     });
+  } finally {
+    hideLoading();
   }
-
-  if (list.length === 0) list.push({ name: "", phone: "" });
-
-  const renderList = () => {
-    container.innerHTML = "";
-    list.forEach((item) => {
-      const div = document.createElement("div");
-      div.className = "d-flex mb-2 gap-2 align-items-center";
-
-      div.innerHTML = `
-        <input type="text" class="form-control form-control-sm contact-name" placeholder="${translate(
-          "NAME"
-        )}" value="${item.name}" ${readonly ? "disabled" : ""}>
-        <input type="text" class="form-control form-control-sm contact-phone" placeholder="Teléfono" value="${
-          item.phone
-        }" ${readonly ? "disabled" : ""}>
-        ${
-          !readonly
-            ? `<button class="btn btn-sm btn-success btn-add" title="Agregar">+</button>`
-            : ""
-        }
-      `;
-
-      const btnAdd = div.querySelector(".btn-add");
-      if (btnAdd) {
-        btnAdd.onclick = () => {
-          list.push({ name: "", phone: "" });
-          renderList();
-          emitChange();
-        };
-      }
-
-      div.querySelector(".contact-name")?.addEventListener("input", emitChange);
-      div
-        .querySelector(".contact-phone")
-        ?.addEventListener("input", emitChange);
-
-      container.appendChild(div);
-    });
-  };
-
-  const emitChange = () => {
-    if (onChange) {
-      const str = list
-        .filter((i) => i.name && i.phone)
-        .map((i) => `${i.name}|${i.phone}`)
-        .join("-");
-      onChange(str);
-    }
-  };
-
-  renderList();
 }
 
 /* ================= Main Component ================= */
@@ -106,9 +69,12 @@ export function renderAddressEdit(
   addressData,
   readonlyMode = false
 ) {
+  const newAddres = addressData.id === null;
+
   container.innerHTML = `
   <div class="card-body">
-    <div class="accordion" id="addressAccordion">
+    <form id="addressForm">
+     <div class="accordion" id="addressAccordion">
 
       <!-- Información Personal -->
       <div class="accordion-item">
@@ -306,113 +272,135 @@ export function renderAddressEdit(
       </div>
 
     </div>
+
+      <!-- Actions -->
+      <div class="row mt-4">
+        <div class="col-md-12 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-secondary" id="btnBack">
+            <i class="fas fa-arrow-left"></i> Voltar
+          </button>
+          ${
+            !readonlyMode
+              ? `
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> ${newAddres ? "Salvar" : "Actualizar"}
+            </button>`
+              : ""
+          }
+        </div>
+      </div>
+    </form>
   </div>
   `;
 
-  // =================== Gender Selection ===================
   removeAddButton();
+
+  /* ================= Gender ================= */
   const genderGroup = container.querySelector("#genderGroup");
   let genderValue = addressData.gender || null;
 
   const updateGenderUI = () => {
-    genderGroup.querySelectorAll(".gender-option").forEach((el) => {
+    genderGroup?.querySelectorAll(".gender-option").forEach((el) => {
       el.classList.toggle("selected", el.dataset.value === genderValue);
     });
   };
   updateGenderUI();
 
-  if (!readonlyMode) {
-    genderGroup.querySelectorAll(".gender-option").forEach((el) => {
-      el.onclick = () => {
-        genderValue = el.dataset.value;
-        updateGenderUI();
-        container.querySelector("#genderError").style.display = "none";
-      };
-    });
-  }
+  genderGroup?.querySelectorAll(".gender-option").forEach((el) => {
+    el.onclick = () => {
+      genderValue = el.dataset.value;
+      updateGenderUI();
+      container.querySelector("#genderError").style.display = "none";
+    };
+  });
 
-  // =================== Contacts ===================
-  const contactsContainer = container.querySelector("#contactsContainer");
+  /* ================= Contacts ================= */
   let phoneString = addressData.phone || "";
-  renderContactsComponent(
-    contactsContainer,
+  renderContacts(
+    "contactsContainer",
     phoneString,
     readonlyMode,
-    (str) => {
-      phoneString = str;
-    }
+    (str) => (phoneString = str)
   );
 
-  // =================== Map Button ===================
-  const btnMap = container.querySelector("#btnMap");
-  if (!readonlyMode && btnMap) {
-    btnMap.onclick = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          container.querySelector("#lat").value = pos.coords.latitude;
-          container.querySelector("#lng").value = pos.coords.longitude;
-        });
-      } else {
-        alert("Geolocalización no soportada");
-      }
-    };
-  }
+  /* ================= Map ================= */
+  container.querySelector("#btnMap")?.addEventListener("click", () => {
+    navigator.geolocation?.getCurrentPosition((pos) => {
+      container.querySelector("#lat").value = pos.coords.latitude;
+      container.querySelector("#lng").value = pos.coords.longitude;
+    });
+  });
 
-  // =================== Form Submission ===================
-  const form = document.createElement("form");
-  container.appendChild(form);
-
-  form.onsubmit = (e) => {
+  /* ================= Submit ================= */
+  container.querySelector("#addressForm").onsubmit = async (e) => {
     e.preventDefault();
 
-    const nameInput = container.querySelector("#name");
-    const addressInput = container.querySelector("#address");
-    const homeDescInput = container.querySelector("#home_description");
-    let hasError = false;
+    const name = container.querySelector("#name");
+    const address = container.querySelector("#address");
+    const home = container.querySelector("#home_description");
+    let error = false;
 
-    clearInvalid(nameInput);
-    clearInvalid(addressInput);
-    clearInvalid(homeDescInput);
+    [name, address, home].forEach(clearInvalid);
 
-    if (!nameInput.value.trim()) {
-      setInvalid(nameInput);
-      hasError = true;
+    if (!name.value.trim()) {
+      setInvalid(name);
+      error = true;
     }
-    if (!addressInput.value.trim()) {
-      setInvalid(addressInput);
-      hasError = true;
+    if (!address.value.trim()) {
+      setInvalid(address);
+      error = true;
     }
-    if (!homeDescInput.value.trim()) {
-      setInvalid(homeDescInput);
-      hasError = true;
+    if (!home.value.trim()) {
+      setInvalid(home);
+      error = true;
     }
     if (!genderValue) {
       container.querySelector("#genderError").style.display = "block";
-      hasError = true;
+      error = true;
     }
 
-    if (hasError) return;
+    if (error) {
+      renderAlertModal(document.body, {
+        type: "ERROR",
+        title: "Error",
+        message: "¡Por favor, rellene los campos obligatorios!",
+      });
+      return;
+    }
 
-    const result = {
-      ...addressData,
-      name: nameInput.value.trim(),
+    const loginService = new LoginService();
+    const userLogged = loginService.getLoggedUser();
+
+    const addressNew = {
+      id: addressData.id ?? null,
+      congregation_number: userLogged.congregation_number,
+      created_by: userLogged.user,
+      name: name.value.trim(),
+      address: address.value.trim(),
       gender: genderValue,
+      lat: parseFloat(container.querySelector("#lat").value),
+      lng: parseFloat(container.querySelector("#lng").value),
+      home_description: home.value.trim(),
+      phone: phoneString,
+
       age_type: container.querySelector("#age_type").value,
       deaf: container.querySelector("#deaf").checked,
       mute: container.querySelector("#mute").checked,
       blind: container.querySelector("#blind").checked,
       sign: container.querySelector("#sign").checked,
-      address: addressInput.value.trim(),
-      home_description: homeDescInput.value.trim(),
+
+      description: container.querySelector("#description").value,
+
       type: container.querySelector("#type").value,
       status: container.querySelector("#status").value,
-      lat: parseFloat(container.querySelector("#lat").value),
-      lng: parseFloat(container.querySelector("#lng").value),
-      description: container.querySelector("#description").value,
-      family_description: container.querySelector("#family_description").value,
-      phone: phoneString,
-    };
 
-    console.log("Final Address Object:", result);
+      family_description: container.querySelector("#family_description").value,
+    };
+    await saveAddress(container, addressNew);
   };
+
+  /* ================= Back ================= */
+  container.querySelector("#btnBack").addEventListener("click", () => {
+    loadAddress();
+  });
 }

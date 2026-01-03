@@ -18,6 +18,8 @@ const TRANSLATIONS = {
     VALIDATE: "Validar",
     INVALID: "Inválido",
     NAME: "Nombre",
+    ERROR_SAVE_USER: "¡Se produjo un error al guardar el usuario!",
+    USER_SAVE_SUCESSFULLY: "¡Usuario guardado exitosamente!",
   },
 
   BR: {
@@ -37,6 +39,8 @@ const TRANSLATIONS = {
     VALIDATE: "Validar",
     INVALID: "Inválido",
     NAME: "Nome",
+    ERROR_SAVE_USER: "Ocorreu um erro ao salvar usuário!",
+    USER_SAVE_SUCESSFULLY: "Usuário salvo com sucesso!",
   },
 };
 

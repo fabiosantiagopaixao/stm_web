@@ -77,7 +77,7 @@ async function onDeleteYes(territory, content) {
     type: "INFO",
     title: "Deletar Territorio",
     message: "Territorio deletado com sucesso!",
-  }).modal("show");
+  });
 
   loadTerritory(); // recarrega a tabela
 }

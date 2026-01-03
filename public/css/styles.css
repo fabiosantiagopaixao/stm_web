@@ -77,6 +77,16 @@ td.text-end.text-nowrap {
   filter: grayscale(0%);
 }
 
+.gender-option img {
+  filter: grayscale(100%); /* Deixa em preto e branco */
+}
+.gender-option img:hover {
+  filter: grayscale(0%); /* Deixa em preto e branco */
+}
+.gender-option.selected img {
+  filter: grayscale(0%); /* Deixa em preto e branco */
+}
+
 /* Pesquisar input */
 #addressesContainer .search-input {
   width: 100%;
@@ -165,10 +175,17 @@ a.nav-link {
   cursor: pointer !important;
 }
 
+.card-body {
+  min-height: 300px !important;
+}
 .accordion-button:not(.collapsed) {
   background: #456bd8;
   color: #fff;
   font-size: 0.8em;
+}
+
+.readOnlyData {
+  opacity: 0.8;
 }
 
 button.accordion-button.collapsed {

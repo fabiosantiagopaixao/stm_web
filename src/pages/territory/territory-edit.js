@@ -177,7 +177,7 @@ export async function renderTerritoryEdit(
         await territoryAddressService.getLastNumberPlus1();
 
       const updatedTerritory = {
-        id: territoryData.id,
+        id: territoryData.id ?? null,
         number: newTerritory ? numberTerritory : territoryData.number,
         name: name.value.trim(),
         type: typeChecked.value,
@@ -201,7 +201,7 @@ export async function renderTerritoryEdit(
         message: newTerritory
           ? "Territorio salvo com sucesso!"
           : "Territorio actualizado com sucesso!",
-      }).modal("show");
+      });
 
       loadTerritory();
     } catch (error) {
@@ -213,7 +213,7 @@ export async function renderTerritoryEdit(
         message: newTerritory
           ? "Ocorreu um erro ao salvar territorio!"
           : "Ocorreu um erro ao actulizar territorio!",
-      }).modal("show");
+      });
     } finally {
       hideLoading();
     }

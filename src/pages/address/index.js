@@ -1,8 +1,11 @@
 import { AddressService } from "../../api/services/AddressService.js";
-import { LoginService } from "../../api/LoginService.js";
+import { TerritoryAddressService } from "../../api/services/TerritoryAddressService.js";
 import { showLoading, hideLoading } from "../../components/loading.js";
 import { renderTable } from "../../components/table.js";
 import { renderAddressEdit } from "./address-edit.js";
+import { showConfirmModal } from "../../components/modal.js";
+import { setUpButtonAdd } from "../util/PagesUtil.js";
+import { renderAlertModal } from "../../components/renderAlertModal.js";
 
 export async function loadAddress() {
   const content = document.getElementById("card-data");
@@ -11,11 +14,7 @@ export async function loadAddress() {
   showLoading(content, "Cargando Direcciones");
 
   const service = new AddressService();
-  const loginService = new LoginService();
-  const addressLogged = loginService.getLoggedUser();
-  const data = await service.getByCongregation(
-    addressLogged.congregation_number
-  );
+  const data = await service.getByCongregation();
 
   hideLoading(content);
 
@@ -31,34 +30,62 @@ export async function loadAddress() {
     tableHeight: null,
     onView: (address) => renderAddressEdit(content, address, true),
     onEdit: (address) => renderAddressEdit(content, address),
-    onDelete: (id) => {
-      if (confirm("Are you sure you want to delete address " + id + "?")) {
-        alert("Deleted Address " + id);
-      }
-    },
+    onDelete: (territory) => onShowDialogDelete(territory, content),
   });
 
-  setupAddButton(content);
+  setUpButtonAdd({
+    buttonId: "btnAdd", // id do botão
+    content, // referência ao container/card
+    onClick: (content) => {
+      const newAddress = {
+        id: null,
+        name: null,
+        address: null,
+        gender: null,
+        lat: null,
+        lng: null,
+        home_description: null,
+        phone: null,
+        age_type: null,
+        deaf: null,
+        mute: null,
+        blind: null,
+        sign: null,
+        description: null,
+        type: null,
+        status: null,
+        family_description: null,
+      };
+      renderAddressEdit(content, newAddress);
+    },
+  });
 }
 
-/* 🔹 FUNÇÃO PARA CONFIGURAR O BOTÃO "ADICIONAR" */
-function setupAddButton(content) {
-  const btnAdd = document.getElementById("btnAdd");
-  if (!btnAdd) return;
+function onShowDialogDelete(address, content) {
+  const confirmodal = showConfirmModal({
+    title: "Eliminar Dirección",
+    message: `¿Está seguro que desea eliminar la dirección <b>${address.name}</b>?`,
+    confirmText: "Sí",
+    cancelText: "No",
+    onPrimary: () => onDeleteYes(address, content),
+  });
+  confirmodal.show();
+}
 
-  btnAdd.classList.remove("noneButton");
+async function onDeleteYes(address, content) {
+  const service = new TerritoryAddressService();
 
-  btnAdd.onclick = (e) => {
-    e.preventDefault();
+  showLoading(content, "Eliminando dirección");
 
-    const newAddress = {
-      id: null,
-      number: "",
-      name: "",
-      password: "",
-      type: "HOUSE_TO_HOUSE",
-    };
+  await service.deleteAddress(address);
 
-    renderAddressEdit(content, newAddress);
-  };
+  hideLoading(content);
+
+  renderAlertModal(document.body, {
+    type: "INFO",
+    title: "Deletar Dirección",
+    message: "Dirección deletada con sucesso!",
+  });
+
+  loadAddress(); // recarrega a tabela
 }

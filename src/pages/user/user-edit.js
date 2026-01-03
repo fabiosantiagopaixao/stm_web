@@ -4,6 +4,7 @@ import { loadUser } from "./index.js";
 import { LoginService } from "../../api/LoginService.js";
 import { renderAlertModal } from "../../components/renderAlertModal.js"; // ✅ novo modal
 import { removeAddButton } from "../util/PagesUtil.js";
+import { translate } from "../util/TranslateUtil.js";
 
 /* ================= Helpers ================= */
 const USER_TYPES = [
@@ -192,9 +193,10 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
       type: typeChecked.value,
       active: active.checked,
       congregation_number: loginService.getLoggedUser().congregation_number,
+      congregation_name: loginService.getLoggedUser().congregation_name,
     };
 
-    showLoading(container, "Saving user");
+    showLoading(container, "Guardando usuario");
 
     try {
       const service = new UserService();
@@ -204,18 +206,18 @@ export function renderUserEdit(container, userData, readonlyMode = false) {
       renderAlertModal(document.body, {
         type: "INFO",
         title: "Info",
-        message: "Usuário salvo com sucesso!",
-      }).modal("show");
+        message: translate("USER_SAVE_SUCESSFULLY"),
+      });
 
       loadUser();
     } catch (error) {
-      console.error("Error saving user:", error);
+      console.error("Error guardar usuario:", error);
 
       renderAlertModal(document.body, {
         type: "ERROR",
         title: "Error",
-        message: "Ocorreu um erro ao salvar usuário!",
-      }).modal("show");
+        message: translate("ERROR_SAVE_USER"),
+      });
     } finally {
       hideLoading();
     }

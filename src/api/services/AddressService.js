@@ -30,7 +30,7 @@ export class AddressService {
     return this.writeApi.post(address);
   }
 
-  async delete(address) {
-    return this.writeApi.delete(address);
+  async delete(id) {
+    return this.writeApi.delete(id);
   }
 }

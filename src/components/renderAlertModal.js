@@ -1,55 +1,51 @@
 export function renderAlertModal(container, options = {}) {
   const {
     id = "alertModal",
-    type = "INFO", // INFO | ERROR | WARNING
+    type = "INFO",
     title = "Attention",
     message = "",
     buttons = [{ text: "OK", className: "btn btn-primary", dismiss: true }],
   } = options;
 
-  const oldModal = document.getElementById(id);
-  if (oldModal) oldModal.remove();
+  document.getElementById(id)?.remove();
 
-  // Define ícone e cor de acordo com o tipo
   let iconHtml = "";
   switch (type.toUpperCase()) {
     case "ERROR":
-      iconHtml = `<i class="fas fa-times-circle text-danger fa-2x mr-2"></i>`;
+      iconHtml = `<i class="fas fa-times-circle text-danger fa-2x me-2"></i>`;
       break;
     case "WARNING":
-      iconHtml = `<i class="fas fa-exclamation-triangle text-warning fa-2x mr-2"></i>`;
+      iconHtml = `<i class="fas fa-exclamation-triangle text-warning fa-2x me-2"></i>`;
       break;
-    case "INFO":
     default:
-      iconHtml = `<i class="fas fa-info-circle text-primary fa-2x mr-2"></i>`;
-      break;
+      iconHtml = `<i class="fas fa-info-circle text-primary fa-2x me-2"></i>`;
   }
 
-  const modalHtml = document.createElement("div");
-  modalHtml.className = "modal fade";
-  modalHtml.id = id;
-  modalHtml.tabIndex = -1;
-  modalHtml.setAttribute("role", "dialog");
-  modalHtml.innerHTML = `
-    <div class="modal-dialog" role="document">
+  const modal = document.createElement("div");
+  modal.className = "modal fade";
+  modal.id = id;
+  modal.tabIndex = -1;
+
+  modal.innerHTML = `
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">${iconHtml}${title}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">${message}</div>
         <div class="modal-footer">
           ${buttons
             .map(
               (btn, i) => `
-            <button type="button" class="${
-              btn.className
-            }" id="${id}-btn-${i}" ${btn.dismiss ? 'data-dismiss="modal"' : ""}>
-              ${btn.text}
-            </button>
-          `
+              <button
+                type="button"
+                class="${btn.className}"
+                id="${id}-btn-${i}"
+                ${btn.dismiss ? 'data-bs-dismiss="modal"' : ""}
+              >
+                ${btn.text}
+              </button>`
             )
             .join("")}
         </div>
@@ -57,9 +53,10 @@ export function renderAlertModal(container, options = {}) {
     </div>
   `;
 
-  container.appendChild(modalHtml);
+  container.appendChild(modal);
 
-  // Adiciona eventos de ação
+  const modalInstance = new bootstrap.Modal(modal);
+
   buttons.forEach((btn, i) => {
     if (btn.action) {
       document
@@ -68,5 +65,7 @@ export function renderAlertModal(container, options = {}) {
     }
   });
 
-  return $(`#${id}`);
+  modalInstance.show();
+
+  return modalInstance;
 }
