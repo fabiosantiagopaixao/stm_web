@@ -28,7 +28,7 @@ function init() {
   if (loginService.isLogged()) {
     // já logado → vai para home.html
     if (!path.endsWith("home.html") && !path.endsWith("home")) {
-      window.location.replace(`${BASE_PATH}/home`);
+      window.location.replace(`${BASE_PATH}home`);
     }
     return;
   }
