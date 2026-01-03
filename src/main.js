@@ -12,6 +12,11 @@ if (!BASE_PATH.includes("localhost") && BASE_PATH.endsWith("/")) {
   if (!BASE_PATH.endsWith("/")) {
     BASE_PATH += "/";
   }
+  BASE_PATH = normalizeUrl(BASE_PATH);
+}
+
+function normalizeUrl(url) {
+  return url.replace(/([^:]\/)\/+/g, "$1");
 }
 
 /* 🔹 APP CONTAINER */
