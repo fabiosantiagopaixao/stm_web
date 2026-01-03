@@ -62,3 +62,7 @@ export function normalize(str) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 }
+
+export function normalizeUrl(url) {
+  return url.replace(/([^:]\/)\/+/g, "$1");
+}

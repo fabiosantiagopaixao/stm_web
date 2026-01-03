@@ -2,6 +2,7 @@ import { LoginService } from "../api/LoginService.js";
 import { showLoading, hideLoading } from "../components/loading.js";
 import { navigateTo, initRouteDefault } from "./route.js";
 import { showConfirmModal } from "../components/modal.js";
+import { normalizeUrl } from "./util/PagesUtil.js";
 
 /* 🔹 BASE PATH (Vite) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";
@@ -24,7 +25,7 @@ const user = loginService.getLoggedUser();
 /* 🔹 AUTH GUARD */
 if (!user) {
   // Usuário não logado → redireciona para login
-  window.location.replace(`${BASE_PATH}/`);
+  window.location.replace(normalizeUrl(`${BASE_PATH}/`));
 } else {
   // 🔹 USER DATA
   document.getElementById("userName").innerText = user.name;
@@ -44,7 +45,7 @@ if (!user) {
       showLoading(null, "Logout");
       loginService.logout();
       hideLoading();
-      window.location.replace(`${BASE_PATH}`);
+      window.location.replace(normalizeUrl(`${BASE_PATH}`));
     },
   });
 

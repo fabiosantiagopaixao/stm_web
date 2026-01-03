@@ -2,7 +2,7 @@ import { CongregationService } from "../api/services/CongregationService.js";
 import { LoginService } from "../api/LoginService.js";
 import { showLoading, hideLoading } from "../components/loading.js";
 import { showDialog } from "../components/dialog.js";
-import { enableEnterNavigation } from "./util/PagesUtil.js";
+import { enableEnterNavigation, normalizeUrl } from "./util/PagesUtil.js";
 
 /* 🔹 BASE PATH (Vite dev/prod) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";
@@ -230,7 +230,7 @@ async function handleLogin(loginService) {
     hideLoading();
 
     if (user) {
-      window.location.replace(`${BASE_PATH}home`);
+      window.location.replace(normalizeUrl(`${BASE_PATH}home`));
     } else {
       showDialog({ type: "ERROR", message: "Invalid credentials" });
     }

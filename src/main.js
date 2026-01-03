@@ -1,5 +1,6 @@
 import { LoginService } from "./api/LoginService.js";
 import { renderLogin } from "./pages/login.js";
+import { normalizeUrl } from "./pages/util/PagesUtil.js";
 
 /* 🔹 BASE PATH (Vite dev/prod) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";
@@ -12,11 +13,6 @@ if (!BASE_PATH.includes("localhost") && BASE_PATH.endsWith("/")) {
   if (!BASE_PATH.endsWith("/")) {
     BASE_PATH += "/";
   }
-  BASE_PATH = normalizeUrl(BASE_PATH);
-}
-
-function normalizeUrl(url) {
-  return url.replace(/([^:]\/)\/+/g, "$1");
 }
 
 /* 🔹 APP CONTAINER */
@@ -33,14 +29,14 @@ function init() {
   if (loginService.isLogged()) {
     // já logado → vai para home.html
     if (!path.endsWith("home.html") && !path.endsWith("home")) {
-      window.location.replace(`${BASE_PATH}home`);
+      window.location.replace(normalizeUrl(`${BASE_PATH}home`));
     }
     return;
   }
 
   // não logado → renderiza login
   renderLogin(app, () => {
-    window.location.replace(`${BASE_PATH}home`);
+    window.location.replace(normalizeUrl(`${BASE_PATH}home`));
   });
 }
 
