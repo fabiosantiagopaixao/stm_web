@@ -1,6 +1,7 @@
 import { GetApiBaseService } from "./base/GetApiBaseService.js";
 import { PostService } from "./base/PostService.js";
 import { TerritoryService } from "./TerritoryService.js";
+import { AssignmentsService } from "./AssignmentsService.js";
 import { AddressService } from "./AddressService.js";
 import { LoginService } from "../../api/LoginService.js";
 import { translate } from "../../pages/util/TranslateUtil.js";
@@ -9,14 +10,16 @@ import { genderMap } from "../../pages/util/PagesUtil.js";
 export class TerritoryAddressService {
   constructor() {
     const nameSheet = "territory_address";
-    const loginService = new LoginService();
-    this.loggedUser = loginService.getLoggedUser();
+    this.loginService = new LoginService();
+
+    this.loggedUser = this.loginService.getLoggedUser();
 
     this.getApi = new GetApiBaseService(nameSheet);
     this.writeApi = new PostService(nameSheet);
 
     this.territoryService = new TerritoryService();
     this.addressService = new AddressService();
+    this.assignmentsService = new AssignmentsService();
   }
 
   /* ========= READ ========= */
@@ -24,39 +27,17 @@ export class TerritoryAddressService {
     return this.getApi.getByCongregation(this.loggedUser.congregation_number);
   }
 
-  async getAddressesByTerritoryNumber(territoryNumber) {
-    const result = [];
-    const allAddress = await this.addressService.getByCongregation();
-    for (const address of allAddress) {
-      const territoriesAddresses =
-        await this.getTerritoriesByAddressIdAndTerritoryNumber(
-          address.id,
-          territoryNumber
-        );
-
-      if (address) {
-        const newsAddress = {
-          id: address.id,
-          name: address.name,
-          gender: translate(address.gender),
-          age_type: translate(address.age_type),
-          address: address.address,
-          image: this.#getImageBy(address.gender, address.age_type),
-          selected: territoriesAddresses?.length > 0,
-        };
-
-        result.push(newsAddress);
-      }
-    }
-
-    return result;
-  }
-
   #getImageBy(gender, ageType) {
-    const value = `/img/${genderMap?.[gender]?.[ageType] ?? "user.png"}`;
-    if (!value) {
-      value = "/img/man.png";
-    }
+    // Normaliza valores nulos ou vazios
+    const g = gender?.trim() || null;
+    const a = ageType?.trim() || null;
+
+    // Tenta buscar a imagem no mapa
+    const value =
+      g && a && genderMap?.[g]?.[a]
+        ? `/img/${genderMap[g][a]}`
+        : "/img/user.png";
+
     return value;
   }
 
@@ -134,6 +115,22 @@ export class TerritoryAddressService {
     );
 
     return items ?? []; // retorna null se não encontrou
+  }
+
+  async getAddressesByTerritoryNumber(territoryNumber) {
+    const territoryAddresses = await this.getTerritoryAddressTerritoryNumber(
+      territoryNumber
+    );
+
+    const addresses = [];
+    for (const ta of territoryAddresses) {
+      const address = await this.addressService.getAddressById(ta.address_id);
+      if (!address) continue;
+      address.image = this.#getImageBy(address.gender, address.age_type);
+      addresses.push(address);
+    }
+
+    return addresses;
   }
 
   async getTerritoryAddressAddresId(addressId) {
@@ -239,5 +236,72 @@ export class TerritoryAddressService {
 
   async delete(id) {
     return this.writeApi.delete(id);
+  }
+
+  /**
+   *
+   * @returns Objetivo: Listar territorios com uma lista dentro de endereços,
+   * se o territorio está designado booleano
+   * nome de quem está com territorio
+   */
+  async listAllTerritories() {
+    // ordenar
+    let allTerritories = await this.territoryService.getByCongregation();
+    allTerritories.sort((a, b) => {
+      const numA = Number(a.number.replace(/\D/g, ""));
+      const numB = Number(b.number.replace(/\D/g, ""));
+      return numA - numB;
+    });
+
+    for (const territory of allTerritories) {
+      // busca lista de endereços
+      const addresses = await this.getAddressesByTerritoryNumber(
+        territory.number
+      );
+
+      territory.addresses = addresses;
+
+      // verifica se está asignado
+
+      territory.nameAssigned = "";
+
+      const assigment =
+        await this.assignmentsService.getAssigmentByTerritoryNumber(
+          territory.number
+        );
+      if (assigment) {
+        const user = await this.loginService.getUserByUsername(
+          assigment.publisher
+        );
+        territory.assigment = assigment;
+        territory.nameAssigned = user.name;
+        territory.isAssigned = true;
+      } else {
+        territory.isAssigned = false;
+      }
+    }
+
+    return allTerritories;
+  }
+
+  /**
+   *
+   * @returns Objetivo: Listar territorios com uma lista dentro de endereços,
+   * se o territorio está designado booleano
+   * nome de quem está com territorio
+   */
+  async listMyTerritories() {
+    const allTerritories = await this.listAllTerritories();
+    const filterData = allTerritories.filter((item) =>
+      this.#isMyAssigment(item)
+    );
+    return filterData;
+  }
+
+  #isMyAssigment(territory) {
+    return (
+      territory?.assigment &&
+      this.loggedUser?.user === territory.assigment.publisher
+    );
   }
 }

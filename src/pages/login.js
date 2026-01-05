@@ -131,6 +131,7 @@ export async function renderLogin() {
   flags.forEach((flag) => {
     flag.addEventListener("click", async () => {
       localStorage.removeItem("stm_data_congregation");
+      localStorage.removeItem("stm_country");
       // remove a classe selected de todas
       flags.forEach((f) => f.classList.remove("selected"));
 

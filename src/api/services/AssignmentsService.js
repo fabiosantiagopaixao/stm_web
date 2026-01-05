@@ -17,6 +17,20 @@ export class AssignmentsService {
     return this.getApi.getByCongregation(this.loggedUser.congregation_number);
   }
 
+  async getAssigmentByTerritoryNumber(territoryNumber) {
+    const data = await this.getByCongregation();
+    const item = data.find(
+      (item) =>
+        item.territory === territoryNumber &&
+        (item.date_end === "" || item.date_end === null)
+    );
+    return item ?? null;
+  }
+
+  async isTerritoryAssigned(territory) {
+    return territory != null;
+  }
+
   /* ========= WRITE ========= */
   async saveUpdate(assignment) {
     if (assignment.id) {

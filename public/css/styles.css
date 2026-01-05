@@ -175,9 +175,27 @@ a.nav-link {
   cursor: pointer !important;
 }
 
-.card-body {
-  min-height: 300px !important;
+.card.territory-card {
+  background: #ecf1ff;
+  margin: 10px;
+  padding-left: 10px;
+  cursor: pointer;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+  border: 1px solid #cbd8fb;
 }
+a.return-territory.me-2 {
+  font-size: 1.5em;
+}
+.card.territory-card:hover {
+  background: #f5f6d3;
+}
+
+p.no_data {
+  margin: 20px;
+  color: #9b9696;
+  font-size: 1.2em;
+}
+
 .accordion-button:not(.collapsed) {
   background: #456bd8;
   color: #fff;
@@ -280,4 +298,40 @@ img.gender-img {
 */
 @media (max-width: 768px) and (orientation: landscape) {
   /* Smartphone deitado */
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-card {
+  background: #fff;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.modal-header,
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h5 {
+  margin: 0;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
 }

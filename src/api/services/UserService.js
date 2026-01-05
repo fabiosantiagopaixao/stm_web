@@ -19,6 +19,12 @@ export class UserService {
     return this.getApi.getByCongregation(congregationNumber);
   }
 
+  async getUserByUserName(userName) {
+    const users = await this.getByCongregation();
+    const user = users.find((item) => item.user === userName);
+    return user;
+  }
+
   #getLoggedUser() {
     const data = localStorage.getItem("stm_logged_user");
     return data ? JSON.parse(data) : null;

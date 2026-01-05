@@ -29,6 +29,10 @@ export class LoginService {
     return user;
   }
 
+  async getUserByUsername(username) {
+    return await this.userService.getUserByUserName(username);
+  }
+
   saveUser(user) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
   }
