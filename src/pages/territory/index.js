@@ -57,8 +57,8 @@ function onShowDialogDelete(territory, content) {
   const confirmodal = showConfirmModal({
     title: "Eliminar Territorio",
     message: `¿Está seguro que desea eliminar el territorio <b>${territory.number}</b>?`,
-    confirmText: "Sí",
-    cancelText: "No",
+    primaryLabel: "Sí",
+    secondaryLabel: "No",
     onPrimary: () => onDeleteYes(territory, content),
   });
   confirmodal.show();

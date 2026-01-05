@@ -4,7 +4,6 @@ import { TerritoryService } from "./TerritoryService.js";
 import { AssignmentsService } from "./AssignmentsService.js";
 import { AddressService } from "./AddressService.js";
 import { LoginService } from "../../api/LoginService.js";
-import { translate } from "../../pages/util/TranslateUtil.js";
 import { genderMap } from "../../pages/util/PagesUtil.js";
 
 export class TerritoryAddressService {

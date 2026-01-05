@@ -65,8 +65,8 @@ function onShowDialogDelete(address, content) {
   const confirmodal = showConfirmModal({
     title: "Eliminar Dirección",
     message: `¿Está seguro que desea eliminar la dirección <b>${address.name}</b>?`,
-    confirmText: "Sí",
-    cancelText: "No",
+    primaryLabel: "Sí",
+    secondaryLabel: "No",
     onPrimary: () => onDeleteYes(address, content),
   });
   confirmodal.show();

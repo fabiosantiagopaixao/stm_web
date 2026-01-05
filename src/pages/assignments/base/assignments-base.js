@@ -5,26 +5,31 @@ import { LoginService } from "../../../api/LoginService.js";
 import { showLoading, hideLoading } from "../../../components/loading.js";
 import { renderTerritoryCard } from "../../../components/territory-card.js";
 import { showAssignTerritoryModal } from "../../../components/assign-territory-modal.js";
+import { showConfirmModal } from "../../../components/modal.js";
+import { renderAlertModal } from "../../../components/renderAlertModal.js";
 
-// ===== Estado =====
+/* ===== STATE ===== */
 let territories = [];
 let filteredTerritories = [];
 const selectedTerritoryIds = new Set();
+let currentPageType = null;
 
-// ===== Load =====
+/* ===== LOAD ===== */
 export async function loadAssignmentsBase({ pageType }) {
-  const allowAssign = pageType === "ASSIGNMENTS";
-  const container = document.getElementById("card-data");
+  currentPageType = pageType;
+
+  const content = document.getElementById("card-data");
   const title = document.getElementById("pageTitle");
 
   title.textContent =
     pageType === "ASSIGNMENTS" ? "Assignments" : "My Assignments";
 
-  const msgLaoding =
+  showLoading(
+    content,
     pageType === "ASSIGNMENTS"
-      ? "Loading Assignments"
-      : "Loading My Assignments";
-  showLoading(container, msgLaoding);
+      ? "Loading Assignments..."
+      : "Loading My Assignments..."
+  );
 
   const loginService = new LoginService();
   const user = loginService.getLoggedUser();
@@ -37,17 +42,17 @@ export async function loadAssignmentsBase({ pageType }) {
 
   filteredTerritories = territories;
 
-  hideLoading(container);
-  render(pageType);
+  hideLoading(content);
+  render();
 }
 
-// ===== Render =====
-function render(pageType) {
+/* ===== RENDER ===== */
+function render() {
   const container = document.getElementById("card-data");
   container.innerHTML = "";
 
   if (filteredTerritories.length === 0) {
-    container.innerHTML = "<p class='no_data'>Ninguna asignación</p>";
+    container.innerHTML = `<p class="no_data">Ninguna asignación</p>`;
     return;
   }
 
@@ -55,7 +60,7 @@ function render(pageType) {
     const card = renderTerritoryCard(container, territory, {
       selectable: true,
       selected: selectedTerritoryIds.has(territory.id),
-      showCheckbox: pageType === "MY_ASSIGNMENTS" ? false : true,
+      showCheckbox: currentPageType === "MY_ASSIGNMENTS" ? false : true,
 
       onSelect: (checked) => {
         checked
@@ -76,7 +81,7 @@ function render(pageType) {
   renderBottomBar();
 }
 
-// ===== Bottom Bar =====
+/* ===== BOTTOM BAR ===== */
 function renderBottomBar() {
   let bar = document.getElementById("bottom-bar");
 
@@ -100,7 +105,7 @@ function renderBottomBar() {
   bar.querySelector("button").onclick = openAssignModal;
 }
 
-// ===== Assign =====
+/* ===== ASSIGN ===== */
 function openAssignModal() {
   const selectedTerritories = territories.filter((t) =>
     selectedTerritoryIds.has(t.id)
@@ -117,8 +122,8 @@ function openAssignModal() {
         userId
       );
 
-      selectedTerritoryIds.clear();
-      await loadAssignmentsBase();
+      resetState();
+      await loadAssignmentsBase({ pageType: currentPageType });
     },
 
     onClose: () => {
@@ -128,14 +133,46 @@ function openAssignModal() {
   });
 }
 
-// ===== Actions =====
+/* ===== RETURN ===== */
 function onReturnTerritory(territory) {
-  if (!confirm(`Return territory ${territory.number}?`)) return;
+  const modal = showConfirmModal({
+    title: "Retornar Territorio",
+    message: `¿Está seguro que desea retornar el territorio <b>${territory.number}</b>?`,
+    primaryLabel: "Sí",
+    secondaryLabel: "No",
+    onPrimary: () => returnTerritoryConfirm(territory),
+  });
 
-  const service = new AssignmentsService();
-  service.returnTerritory(territory.id).then(loadAssignments);
+  modal.show();
 }
 
-function onViewAddress(address) {
-  console.log("View address", address);
+async function returnTerritoryConfirm(territory) {
+  const content = document.getElementById("card-data");
+
+  showLoading(content, "Retornando territorio...");
+
+  const service = new AssignmentsService();
+
+  // ✅ USE O ID CORRETO
+  await service.returnTerritory(territory.assigment);
+
+  hideLoading(content);
+
+  renderAlertModal(document.body, {
+    type: "INFO",
+    title: "Retornar Territorio",
+    message: "Territorio retornado com sucesso!",
+  });
+
+  resetState();
+
+  // 🔄 RELOAD REAL
+  await loadAssignmentsBase({ pageType: currentPageType });
+}
+
+/* ===== STATE RESET ===== */
+function resetState() {
+  territories = [];
+  filteredTerritories = [];
+  selectedTerritoryIds.clear();
 }

@@ -1,6 +1,10 @@
 import { GetApiBaseService } from "./base/GetApiBaseService.js";
 import { PostService } from "./base/PostService.js";
 import { LoginService } from "../../api/LoginService.js";
+import {
+  getCurrentDateDDMMYYYY,
+  formatDateToDDMMYYYY,
+} from "../../pages/util/PagesUtil.js";
 
 export class AssignmentsService {
   constructor() {
@@ -41,5 +45,17 @@ export class AssignmentsService {
 
   async delete(assignment) {
     return this.writeApi.delete(assignment);
+  }
+
+  async returnTerritory(assignment) {
+    if (assignment) {
+      assignment.date_begin = formatDateToDDMMYYYY(assignment.date_begin);
+      assignment.date_end = getCurrentDateDDMMYYYY();
+      this.saveUpdate(assignment);
+
+      localStorage.removeItem("stm_data_address");
+      localStorage.removeItem("stm_data_territory");
+      localStorage.removeItem("stm_data_assignments");
+    }
   }
 }

@@ -66,3 +66,27 @@ export function normalize(str) {
 export function normalizeUrl(url) {
   return url.replace(/([^:]\/)\/+/g, "$1");
 }
+
+export function getCurrentDateDDMMYYYY() {
+  const today = new Date();
+
+  const day = String(today.getDate()).padStart(2, "0");
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // mês começa em 0
+  const year = today.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+export function formatDateToDDMMYYYY(dateInput) {
+  if (!dateInput) return "";
+
+  const date = new Date(dateInput);
+
+  if (isNaN(date.getTime())) return "";
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
