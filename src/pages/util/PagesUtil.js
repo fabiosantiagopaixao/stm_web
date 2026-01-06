@@ -34,6 +34,26 @@ export function setUpButtonAdd({ buttonId = "btnAdd", content, onClick }) {
   };
 }
 
+export function setUpButtonAsign({
+  buttonId = "btnAsign",
+  content,
+  onClick,
+  label,
+}) {
+  const btn = document.getElementById(buttonId);
+  if (!btn) return;
+
+  btn.classList.remove("noneButton");
+  btn.textContent = label;
+
+  btn.onclick = (e) => {
+    e.preventDefault();
+    if (typeof onClick === "function") {
+      onClick(content);
+    }
+  };
+}
+
 /**
  * Permite navegar pelos inputs de um formulário usando Enter.
  * @param {HTMLElement[]} fields - Array de inputs/selects do formulário, na ordem.
@@ -89,4 +109,97 @@ export function formatDateToDDMMYYYY(dateInput) {
   const year = date.getFullYear();
 
   return `${day}/${month}/${year}`;
+}
+
+/* ===== MAP BUTTON ===== */
+export function setUpMapButton(filteredTerritories) {
+  const btnMap = document.getElementById("btnMap");
+  if (!btnMap) return;
+
+  btnMap.classList.remove("noneButton");
+
+  btnMap.onclick = async () => {
+    try {
+      await openMapPage(filteredTerritories);
+    } catch (e) {
+      console.error("Error opening map:", e);
+      alert("Could not open map.");
+    }
+  };
+}
+
+export async function openMapPage(filteredTerritories) {
+  const territoriesWithLocation = filteredTerritories
+    .filter((t) => t.addresses?.some((a) => a.lat && a.lng))
+    .map((t) => ({
+      id: t.id,
+      number: t.number,
+      name: t.name,
+      addresses: t.addresses
+        .filter((a) => a.lat && a.lng)
+        .map((a) => ({ name: a.name, lat: Number(a.lat), lng: Number(a.lng) })),
+    }));
+
+  const territoriesWithoutLocation = filteredTerritories.filter(
+    (t) => !t.addresses?.some((a) => a.lat && a.lng)
+  );
+
+  let userPosition = null;
+  try {
+    userPosition = await getUserLocation();
+  } catch {
+    userPosition = null;
+  }
+
+  const mapData = {
+    withLocation: territoriesWithLocation,
+    withoutLocation: territoriesWithoutLocation,
+    userPosition,
+  };
+
+  const mapDataStr = encodeURIComponent(JSON.stringify(mapData));
+  window.open(`map.html?data=${mapDataStr}`, "_blank");
+}
+
+/**
+ * Tenta obter a localização do usuário.
+ * 1. Usa o navegador (navigator.geolocation) se permitido.
+ * 2. Se negado ou não suportado, tenta fallback via IP (aproximado).
+ * @returns {Promise<{lat: number, lng: number} | null>}
+ */
+export async function getUserLocation() {
+  // Tenta via navegador
+  if (navigator.geolocation) {
+    try {
+      const pos = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) =>
+            resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          reject,
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      });
+      return pos;
+    } catch (err) {
+      console.warn("Falha ao obter localização via navegador:", err);
+      alert(
+        "Não foi possível obter sua localização pelo navegador. Tentando localização aproximada via IP..."
+      );
+    }
+  } else {
+    console.warn("Geolocalização não suportada no navegador.");
+  }
+
+  // Fallback usando IP (aproximado)
+  try {
+    const res = await fetch("https://ipapi.co/json/"); // serviço gratuito de geolocalização por IP
+    if (!res.ok) throw new Error("Falha ao consultar IP");
+    const data = await res.json();
+    return { lat: Number(data.latitude), lng: Number(data.longitude) };
+  } catch (err) {
+    console.warn("Falha ao obter localização via IP:", err);
+  }
+
+  // Se tudo falhar, retorna null
+  return null;
 }

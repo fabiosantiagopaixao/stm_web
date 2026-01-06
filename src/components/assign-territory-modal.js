@@ -1,14 +1,5 @@
-import { showLoading, hideLoading } from "./loading.js";
+import { renderAlertModal } from "../components/renderAlertModal.js"; // ✅ novo modal
 
-/**
- * Assign Territory Modal
- *
- * Params:
- *  - users: [{ name }]
- *  - selectedTerritories: [{ id, number }]
- *  - onAssign: function(selectedUserName)
- *  - onClose: function()
- */
 export function showAssignTerritoryModal({
   users = [],
   selectedTerritories = [],
@@ -35,7 +26,10 @@ export function showAssignTerritoryModal({
         <select class="form-select" id="assignUserSelect">
           <option value="">-- Select --</option>
           ${users
-            .map((u) => `<option value="${u.name}">${u.name}</option>`)
+            .map(
+              (u) =>
+                `<option value="${u.user}">${u.name} - (${u.user})</option>`
+            )
             .join("")}
         </select>
       </div>
@@ -46,7 +40,7 @@ export function showAssignTerritoryModal({
           .map(
             (t) =>
               `<li class="list-group-item">
-                Territory ${t.number}
+                 ${t.number} - (${t.name})
               </li>`
           )
           .join("")}
@@ -54,11 +48,11 @@ export function showAssignTerritoryModal({
     </div>
 
     <div class="modal-footer">
-      <button class="btn btn-secondary" id="btnCancel">
-        Cancel
+      <button class="btn btn-danger" id="btnCancel">
+        Cancelar
       </button>
       <button class="btn btn-primary" id="btnAssign">
-        Assign
+        Asignar
       </button>
     </div>
   `;
@@ -87,29 +81,34 @@ export function showAssignTerritoryModal({
   });
 
   // ===== Assign =====
-  btnAssign.onclick = async () => {
-    const selectedUserName = userSelect.value;
+  btnAssign.onclick = () => {
+    const selectedUser = userSelect.value;
 
-    if (!selectedUserName) {
-      alert("Please select a publisher");
+    if (!selectedUser) {
+      renderAlertModal(document.body, {
+        type: "ERROR",
+        title: "Error",
+        message: "Selecione un publciador",
+      });
       return;
     }
 
     if (!selectedTerritories.length) {
-      alert("No territories selected");
+      renderAlertModal(document.body, {
+        type: "ERROR",
+        title: "Error",
+        message: "Territorios no selecionados",
+      });
       return;
     }
 
-    showLoading(modal, "Assigning territories...");
+    // ✅ APENAS DEVOLVE O USUÁRIO SELECIONADO
+    onAssign &&
+      onAssign({
+        user: selectedUser,
+        territories: selectedTerritories,
+      });
 
-    try {
-      await onAssign(selectedUserName);
-      close();
-    } catch (e) {
-      console.error(e);
-      alert("Failed to assign territories");
-    } finally {
-      hideLoading(modal);
-    }
+    close();
   };
 }

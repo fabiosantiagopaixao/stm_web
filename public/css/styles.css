@@ -177,7 +177,6 @@ a.nav-link {
 
 .card.territory-card {
   background: #ecf1ff;
-  margin: 10px;
   padding-left: 10px;
   cursor: pointer;
   box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
@@ -185,6 +184,7 @@ a.nav-link {
 }
 a.return-territory.me-2 {
   font-size: 1.5em;
+  cursor: pointer !important;
 }
 .card.territory-card:hover {
   background: #f5f6d3;
@@ -218,6 +218,10 @@ button.accordion-button.collapsed {
 
 button#btnMap {
   height: 40px;
+}
+
+.card.territory-card.bg-light-danger {
+  background: #ffe8e8 !important;
 }
 
 /* 
@@ -334,4 +338,48 @@ img.gender-img {
   border: none;
   font-size: 22px;
   cursor: pointer;
+}
+
+.assign-bottom-bar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+}
+
+#btnAsign {
+  position: fixed;
+  bottom: 75px;
+  right: 20px;
+  z-index: 1050;
+
+  /* opcional */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.card.territory-card.selected {
+  background: #b0c0f0;
+}
+
+.card-data-territory {
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.card-filter {
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px !important;
+}
+
+.card-filter .card-header {
+  background: #f8f9fa;
+  padding: 0.5rem 0.75rem;
+}
+
+.card-filter .card-body {
+  background: #fff;
+}
+.filter-body {
+  margin: 10px;
 }

@@ -47,6 +47,21 @@ export class AssignmentsService {
     return this.writeApi.delete(assignment);
   }
 
+  async assignTerritories(user, territories) {
+    for (const territory of territories) {
+      const assignment = {
+        congregation_number: territory.congregation_number,
+        territory: territory.number,
+        publisher: user,
+        date_begin: getCurrentDateDDMMYYYY(),
+      };
+      this.saveUpdate(assignment);
+    }
+    localStorage.removeItem("stm_data_address");
+    localStorage.removeItem("stm_data_territory");
+    localStorage.removeItem("stm_data_assignments");
+  }
+
   async returnTerritory(assignment) {
     if (assignment) {
       assignment.date_begin = formatDateToDDMMYYYY(assignment.date_begin);

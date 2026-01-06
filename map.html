@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Territories Map</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+
+      #no-location {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        max-width: 300px;
+        max-height: 40%;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+      }
+
+      #no-location ul {
+        padding-left: 20px;
+        margin: 0;
+      }
+
+      #no-location h3 {
+        margin-top: 0;
+        font-size: 16px;
+        color: #333;
+      }
+    </style>
+
+    <!-- Google Maps JS (substitua YOUR_API_KEY pela sua chave) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk9AUNcWTeX7NzGRKVf9Mw_p00R4Bblh0"></script>
+  </head>
+  <body>
+    <div id="no-location"></div>
+    <div id="map"></div>
+
+    <script>
+      // ===== 1. Ler os dados da query string =====
+      const params = new URLSearchParams(window.location.search);
+      const mapData = JSON.parse(decodeURIComponent(params.get("data")));
+
+      // ===== 2. Exibir territórios sem localização =====
+      const noLocDiv = document.getElementById("no-location");
+      if (mapData.withoutLocation.length) {
+        noLocDiv.innerHTML = `
+        <h3>Territories without location:</h3>
+        <ul>
+          ${mapData.withoutLocation
+            .map((t) => `<li>${t.number} - ${t.name}</li>`)
+            .join("")}
+        </ul>
+      `;
+      }
+
+      // ===== 3. Inicializar mapa =====
+      const mapCenter = mapData.userPosition || { lat: 0, lng: 0 };
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: mapCenter,
+        zoom: mapData.userPosition ? 12 : 2,
+      });
+
+      // ===== 4. Adicionar marcador do usuário =====
+      if (mapData.userPosition) {
+        new google.maps.Marker({
+          position: mapData.userPosition,
+          map,
+          title: "Your location",
+          icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        });
+      }
+
+      // ===== 5. Adicionar markers dos territórios =====
+      const bounds = new google.maps.LatLngBounds();
+
+      mapData.withLocation.forEach((t) => {
+        t.addresses.forEach((a) => {
+          const marker = new google.maps.Marker({
+            position: { lat: a.lat, lng: a.lng },
+            map,
+            title: `${t.number} - ${t.name} (${a.name})`,
+            icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+          });
+
+          // Estender bounds para todos os markers
+          bounds.extend(marker.position);
+
+          // InfoWindow ao clicar
+          const infoWindow = new google.maps.InfoWindow({
+            content: `<b>${t.number} - ${t.name}</b><br>${a.name}`,
+          });
+
+          marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+          });
+        });
+      });
+
+      // Ajustar zoom e centro para caber todos os markers
+      if (mapData.withLocation.length > 0) {
+        map.fitBounds(bounds);
+      }
+    </script>
+  </body>
+</html>
