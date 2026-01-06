@@ -157,8 +157,16 @@ export async function openMapPage(filteredTerritories) {
     userPosition,
   };
 
-  const mapDataStr = encodeURIComponent(JSON.stringify(mapData));
-  window.open(`map.html?data=${mapDataStr}`, "_blank");
+  // Abre a página em branco
+  const mapWindow = window.open("map.html", "_blank");
+
+  // Quando a página estiver carregada, envia os dados
+  const interval = setInterval(() => {
+    if (mapWindow && mapWindow.postMessage) {
+      mapWindow.postMessage({ type: "MAP_DATA", payload: mapData }, "*");
+      clearInterval(interval);
+    }
+  }, 100);
 }
 
 /**
@@ -202,4 +210,16 @@ export async function getUserLocation() {
 
   // Se tudo falhar, retorna null
   return null;
+}
+
+export function resolveLatLngWithComma(container, selector) {
+  const value = container.querySelector(selector)?.value;
+  if (!value) return ""; // se não houver dado, retorna vazio
+
+  // Converte para float
+  const num = parseFloat(value);
+  if (isNaN(num)) return ""; // se não for número válido, retorna vazio
+
+  // Converte para string e substitui ponto por vírgula
+  return num.toString().replace(".", ",");
 }

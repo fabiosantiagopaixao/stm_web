@@ -13,6 +13,7 @@ export class CongregationService {
   }
 
   async getAll() {
+    localStorage.removeItem("stm_data_user");
     return this.getApi.get();
   }
 

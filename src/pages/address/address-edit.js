@@ -1,4 +1,4 @@
-import { removeAddButton } from "../util/PagesUtil";
+import { removeAddButton, resolveLatLngWithComma } from "../util/PagesUtil";
 import { translate } from "../util/TranslateUtil";
 import { AddressService } from "../../api/services/AddressService.js";
 import { showLoading, hideLoading } from "../../components/loading.js";
@@ -378,8 +378,8 @@ export function renderAddressEdit(
       name: name.value.trim(),
       address: address.value.trim(),
       gender: genderValue,
-      lat: parseFloat(container.querySelector("#lat").value),
-      lng: parseFloat(container.querySelector("#lng").value),
+      lat: resolveLatLngWithComma(container, "#lat"),
+      lng: resolveLatLngWithComma(container, "#lng"),
       home_description: home.value.trim(),
       phone: phoneString,
 

@@ -28,6 +28,7 @@ if (!user) {
   window.location.replace(normalizeUrl(`${BASE_PATH}/`));
 } else {
   // 🔹 USER DATA
+  applyMenuPermissions(user.type);
   document.getElementById("userName").innerText = user.name;
   document.getElementById("nameCongregation").innerText =
     user.congregation_name;
@@ -68,5 +69,60 @@ if (!user) {
     e.preventDefault();
     const page = link.dataset.page;
     navigateTo(page);
+  });
+}
+
+/**
+ * Aplica visibilidade de menus e headings da sidebar
+ * com base no tipo de usuário.
+ */
+function applyMenuPermissions(userType) {
+  // Mapeamento de visibilidade por tipo de usuário
+  const permissions = {
+    ADMINISTRATOR: [
+      "MENU_ADMINISTRATOR",
+      "MENU_USERS",
+      "MENU_ADDRESS",
+      "MENU_TERRITORY",
+      "MENU_ASSIGNMENTS",
+      "MENU_DEFAULT",
+      "MENU_MY_ASSIGNMENTS",
+      "MENU_DIVIDER1",
+      "MENU_DIVIDER2",
+      "MENU_DIVIDER3",
+      "MENU_DIVIDER4",
+    ],
+    AUXILIARY: [
+      "MENU_ADMINISTRATOR",
+      "MENU_DIVIDER1",
+      "MENU_DIVIDER2",
+      "MENU_ASSIGNMENTS",
+      "MENU_MY_ASSIGNMENTS",
+      "MENU_DEFAULT",
+    ],
+    PUBLISHER: [
+      "MENU_DIVIDER1",
+      "MENU_DIVIDER2",
+      "MENU_DEFAULT",
+      "MENU_MY_ASSIGNMENTS",
+    ],
+    CIRCUIT_OVERSEER: [
+      "MENU_DIVIDER1",
+      "MENU_DIVIDER2",
+      "MENU_DEFAULT",
+      "MENU_MY_ASSIGNMENTS",
+    ],
+  };
+
+  const allowedMenus = permissions[userType] || [];
+
+  // Seleciona todos os elementos que tenham data-role começando com MENU
+  document.querySelectorAll("[data-role^='MENU']").forEach((el) => {
+    const role = el.getAttribute("data-role");
+    if (!allowedMenus.includes(role)) {
+      el.style.display = "none"; // esconde menu ou heading
+    } else {
+      el.style.display = "block"; // mostra se permitido
+    }
   });
 }

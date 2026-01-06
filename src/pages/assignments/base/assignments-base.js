@@ -82,10 +82,11 @@ export async function loadAssignmentsBase({ pageType }) {
   const container = document.getElementById("card-data");
   container.classList.add("card-data-territory");
 
-  document.getElementById("pageTitle").innerText =
-    pageType === "ASSIGNMENTS" ? "Assignments" : "My Assignments";
+  const title =
+    pageType === "ASSIGNMENTS" ? "Asignaciones" : "Mis Asignaciones";
+  document.getElementById("pageTitle").innerText = title;
 
-  showLoading(container, "Loading Assignments");
+  showLoading(container, `Loading ${title}`);
 
   const loginService = new LoginService();
   const user = loginService.getLoggedUser();

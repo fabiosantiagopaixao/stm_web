@@ -11,13 +11,13 @@ import { renderAddressEdit } from "./pages/address/address-edit.js";
 import { loadNews } from "./pages/news/index.js";
 import { renderNewsEdit } from "./pages/news/news-edit.js";
 import { loadAssignments } from "./pages/assignments/assignments.js";
-import { loadMyAssignments } from "./pages/assignments/my_assigments.js";
+import { loadMyAssignments } from "./pages/assignments/my_assignments.js";
 import { loadReportS13 } from "./pages/report/report_s13.js";
 import { loadAbout } from "./pages/about/index.js";
 
 export function navigateTo(page) {
-  if (page === undefined) return
-  
+  if (page === undefined) return;
+
   const routes = {
     home: loadHome,
     user: loadUser,
@@ -33,7 +33,7 @@ export function navigateTo(page) {
     report_s13: loadReportS13,
     about: loadAbout,
     congregation: loadCongregation,
-    congregationEdit: renderCongregationsEdit
+    congregationEdit: renderCongregationsEdit,
   };
 
   routes[page]?.();

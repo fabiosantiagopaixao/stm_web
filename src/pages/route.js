@@ -11,7 +11,7 @@ import { renderAddressEdit } from "./address/address-edit.js";
 import { loadNews } from "./news/index.js";
 import { renderNewsEdit } from "./news/news-edit.js";
 import { loadAssignments } from "./assignments/assignments.js";
-import { loadMyAssignments } from "./assignments/my_assigments.js";
+import { loadMyAssignments } from "./assignments/my_assignments.js";
 import { loadReportS13 } from "./report/report_s13.js";
 import { loadAbout } from "./about/index.js";
 

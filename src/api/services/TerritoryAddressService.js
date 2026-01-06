@@ -264,15 +264,15 @@ export class TerritoryAddressService {
 
       territory.nameAssigned = "";
 
-      const assigment =
+      const assignment =
         await this.assignmentsService.getAssigmentByTerritoryNumber(
           territory.number
         );
-      if (assigment) {
+      if (assignment) {
         const user = await this.loginService.getUserByUsername(
-          assigment.publisher
+          assignment.publisher
         );
-        territory.assigment = assigment;
+        territory.assignment = assignment;
         territory.nameAssigned = user.name;
         territory.isAssigned = true;
       } else {
@@ -299,8 +299,8 @@ export class TerritoryAddressService {
 
   #isMyAssigment(territory) {
     return (
-      territory?.assigment &&
-      this.loggedUser?.user === territory.assigment.publisher
+      territory?.assignment &&
+      this.loggedUser?.user === territory.assignment.publisher
     );
   }
 }

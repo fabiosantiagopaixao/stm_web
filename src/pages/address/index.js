@@ -16,8 +16,6 @@ export async function loadAddress() {
   const service = new AddressService();
   const data = await service.getByCongregation();
 
-  hideLoading(content);
-
   renderTable({
     container: content,
     columns: [
@@ -32,6 +30,8 @@ export async function loadAddress() {
     onEdit: (address) => renderAddressEdit(content, address),
     onDelete: (territory) => onShowDialogDelete(territory, content),
   });
+
+  hideLoading(content);
 
   setUpButtonAdd({
     buttonId: "btnAdd", // id do botão
