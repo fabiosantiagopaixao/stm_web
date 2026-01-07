@@ -1,10 +1,12 @@
+import { translate } from "../util/TranslateUtil.js";
+
 export function showDialog({
-  type = "INFO",                 // INFO | ERROR | ALERT
+  type = "INFO", // INFO | ERROR | ALERT
   message = "",
-  okLabel = "OK",
+  okLabel = null,
   onOk = null,
   enableNegativeButton = false,
-  noLabel = "No"
+  noLabel = null,
 }) {
   // Remove dialog anterior se existir
   const existing = document.getElementById("app-dialog-overlay");
@@ -14,19 +16,22 @@ export function showDialog({
   const config = {
     INFO: {
       color: "primary",
-      icon: "bi-info-circle-fill"
+      icon: "bi-info-circle-fill",
+      label: translate("INFO"), // opcional, se quiser traduzir o título
     },
     ERROR: {
       color: "danger",
-      icon: "bi-x-octagon-fill"
+      icon: "bi-x-octagon-fill",
+      label: translate("ERROR"),
     },
     ALERT: {
       color: "warning",
-      icon: "bi-exclamation-triangle-fill"
-    }
+      icon: "bi-exclamation-triangle-fill",
+      label: translate("ALERT"),
+    },
   };
 
-  const { color, icon } = config[type] || config.INFO;
+  const { color, icon, label: translatedType } = config[type] || config.INFO;
 
   /* Overlay */
   const overlay = document.createElement("div");
@@ -35,6 +40,10 @@ export function showDialog({
     "position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center";
   overlay.style.background = "rgba(0,0,0,0.5)";
   overlay.style.zIndex = "1055";
+
+  /* Labels multilíngues */
+  const okText = okLabel ?? translate("OK");
+  const noText = noLabel ?? translate("NO");
 
   /* Dialog */
   overlay.innerHTML = `
@@ -46,7 +55,7 @@ export function showDialog({
         </div>
 
         <div class="text-center fw-bold text-${color} mb-2">
-          ${type}
+          ${translatedType}
         </div>
 
         <div class="text-center text-secondary mb-4">
@@ -57,13 +66,13 @@ export function showDialog({
           ${
             enableNegativeButton
               ? `<button id="dialogNoBtn" class="btn btn-outline-danger">
-                   <i class="bi bi-x-circle me-1"></i> ${noLabel}
+                   <i class="bi bi-x-circle me-1"></i> ${noText}
                  </button>`
               : ""
           }
 
           <button id="dialogOkBtn" class="btn btn-primary">
-            <i class="bi bi-check-circle me-1"></i> ${okLabel}
+            <i class="bi bi-check-circle me-1"></i> ${okText}
           </button>
         </div>
 

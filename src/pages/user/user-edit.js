@@ -4,7 +4,7 @@ import { loadUser } from "./index.js";
 import { LoginService } from "../../api/LoginService.js";
 import { renderAlertModal } from "../../components/renderAlertModal.js"; // ✅ novo modal
 import { removeAddButton } from "../util/PagesUtil.js";
-import { translate } from "../util/TranslateUtil.js";
+import { translate } from "../../util/TranslateUtil.js";
 
 /* ================= Helpers ================= */
 const USER_TYPES = [

@@ -1,6 +1,6 @@
-import { translate } from "../pages/util/TranslateUtil";
+import { translate } from "../util/TranslateUtil.js";
 
-/* ================= Contacts Component (FINAL + Validation Feedback) ================= */
+/* ================= Contacts Component ================= */
 export function renderContacts(
   containerId,
   phoneString = "",
@@ -10,7 +10,6 @@ export function renderContacts(
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // ===== Estado interno =====
   let contacts = [];
 
   // Inicializa a partir da string
@@ -21,18 +20,13 @@ export function renderContacts(
     });
   }
 
-  // ===== Helpers =====
   const buildPhoneString = () =>
     contacts.map((c) => `${c.name}|${c.phone}`).join("-");
-
-  const emitChange = () => {
-    if (onChange) onChange(buildPhoneString());
-  };
+  const emitChange = () => onChange && onChange(buildPhoneString());
 
   const setInvalid = (input) => input.classList.add("is-invalid");
   const clearInvalid = (input) => input.classList.remove("is-invalid");
 
-  // ===== Render =====
   const render = () => {
     container.innerHTML = `
       ${
@@ -43,16 +37,18 @@ export function renderContacts(
             <div class="flex-grow-1">
               <input type="text" id="contactName" class="form-control form-control-sm"
                 placeholder="${translate("NAME")}">
-              <div class="invalid-feedback">Nombre de contacto obligatorio</div>
+              <div class="invalid-feedback">${translate("REQUIRED_NAME")}</div>
             </div>
 
             <div class="flex-grow-1">
-              <input type="text" id="contactPhone" class="form-control form-control-sm"
-                placeholder="Teléfono">
-              <div class="invalid-feedback">Número de teléfono de contacto obligatorio</div>
+              <input type="number" id="contactPhone" class="form-control form-control-sm"
+                placeholder="${translate("PHONE")}">
+              <div class="invalid-feedback">${translate("REQUIRED_PHONE")}</div>
             </div>
 
-            <button type="button" id="btnAddContact" class="btn btn-sm btn-success">+</button>
+            <button type="button" id="btnAddContact" class="btn btn-sm btn-success">
+              ${translate("ADD_CONTACT")}
+            </button>
           </div>
         </div>
       `
@@ -66,7 +62,7 @@ export function renderContacts(
           <thead>
             <tr>
               <th>${translate("NAME")}</th>
-              <th>Teléfono</th>
+              <th>${translate("PHONE")}</th>
               ${!readonly ? "<th></th>" : ""}
             </tr>
           </thead>
@@ -82,10 +78,8 @@ export function renderContacts(
   const renderTable = () => {
     const wrapper = container.querySelector("#contactsTableWrapper");
     const tbody = container.querySelector("#contactsTableBody");
-
     if (!wrapper || !tbody) return;
 
-    // mostra tabela apenas se houver dados
     if (contacts.length === 0) {
       wrapper.style.display = "none";
       return;
@@ -110,7 +104,6 @@ export function renderContacts(
       tbody.appendChild(tr);
     });
 
-    // remover contato
     if (!readonly) {
       tbody.querySelectorAll("button").forEach((btn) => {
         btn.onclick = () => {
@@ -134,7 +127,6 @@ export function renderContacts(
       const name = nameInput.value.trim();
       const phone = phoneInput.value.trim();
 
-      // ===== validação =====
       clearInvalid(nameInput);
       clearInvalid(phoneInput);
 
@@ -149,10 +141,7 @@ export function renderContacts(
       }
       if (hasError) return;
 
-      // adiciona à lista
       contacts.push({ name, phone });
-
-      // limpa campos
       nameInput.value = "";
       phoneInput.value = "";
 

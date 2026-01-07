@@ -1,0 +1,245 @@
+export default {
+  // Menu / Sidebar
+  APP_NAME: "STM Web",
+  MENU_HOME: "Home",
+  MENU_ADMIN: "Administrar",
+  MENU_USERS: "Usuários",
+  MENU_ADDRESSES: "Endereços",
+  MENU_TERRITORIES: "Territórios",
+  MENU_NEWS: "Noticias",
+  MENU_FORM_S13: "Relatório S-13",
+  MENU_ABOUT: "Sobre",
+  MENU_ASSIGNMENTS: "Designações",
+  MENU_GENERAL: "Geral",
+  MENU_MY_ASSIGNMENTS: "Minhas Designações",
+  MENU_CONGREGATION: "Congregação",
+
+  // Topbar
+  USER_NAME: "Nome",
+  LOGOUT: "Sair",
+
+  // Page
+  PAGE_HOME_TITLE: "Home",
+  BUTTON_ADD: "Adicionar",
+  BUTTON_OPEN_MAP: "Abrir Mapa",
+  BUTTON_ASSIGN: "Designar",
+
+  // Footer
+  FOOTER_COPYRIGHT: "Copyright © STM Web 2025",
+
+  // Logout Modal
+  LOGOUT_MODAL_TITLE: "Pronto para sair?",
+  LOGOUT_MODAL_MESSAGE:
+    'Selecione "Sair" abaixo se você estiver pronto para encerrar sua sessão atual.',
+  LOGOUT_MODAL_PRIMARY: "Sair",
+  LOGOUT_MODAL_SECONDARY: "Cancelar",
+
+  // HOME
+  PAGE_HOME_TITLE: "Home",
+  HOME_WELCOME_TITLE: "Bem-vindo ao STM - Painel Administrativo",
+  HOME_WELCOME_DESC:
+    "Selecione uma opção do menu na barra lateral para começar a gerenciar os dados.",
+
+  // Loading
+  LOGOUT_LOADING: "Logout",
+
+  Female: "Feminino",
+  Male: "Masculino",
+  ADULT: "Adulto",
+  HOUSE_TO_HOUSE: "Casa em casa",
+  PHONE: "Telefone",
+  CHILD: "Criança",
+  YOUNG: "Joven",
+  SENIOR: "Idoso",
+  BIBLE_COURSE: "Estudo",
+  PHONE_VISIT: "Visita por Telefone",
+  VISIT: "Visita",
+  VALID: "Válido",
+  DRAFT: "Pendente",
+  VALIDATE: "Validar",
+  INVALID: "Inválido",
+  ERROR_SAVE_USER: "Ocorreu um erro ao salvar usuário!",
+  USER_SAVE_SUCESSFULLY: "Usuário salvo com sucesso!",
+
+  // Page: Login
+  LOGIN_TITLE: "Login",
+  SELECT_CONGREGATION: "Selecione uma congregação",
+  CONGREGATION_REQUIRED: "Por favor, selecione uma congregação",
+  USERNAME_PLACEHOLDER: "Usuário",
+  USERNAME_REQUIRED: "O usuário é obrigatório",
+  PASSWORD_PLACEHOLDER: "Senha",
+  PASSWORD_REQUIRED: "A senha é obrigatória",
+  LOGIN_BUTTON: "Login",
+  LOADING_STM_LOGIN: "Login STM",
+  LOADING_FETCH_CONGREGATIONS: "Carregando congregações",
+  ERROR_FETCH_CONGREGATIONS_BO:
+    "Não foi possível carregar as congregações, erro interno país <strong>[Bolivia]</strong> não configurado, entre em contato com o responsável",
+  ERROR_FETCH_CONGREGATIONS_BR:
+    "Não foi possível carregar as congregações, erro interno país <strong>[Brasil]</strong> não configurado, entre em contato com o responsável",
+  ERROR_INVALID_CREDENTIALS: "Credenciais inválidas",
+  ERROR_LOGIN: "Erro ao fazer login",
+
+  // Address
+  ADDRESS_TITLE: "Endereços",
+  LOADING_ADDRESS: "Carregando Endereços",
+  COLUMN_GENDER: "Gênero",
+  COLUMN_NAME: "Nome",
+  COLUMN_ADDRESS: "Endereço",
+  DELETE_ADDRESS_TITLE: "Excluir Endereço",
+  DELETE_ADDRESS_MESSAGE:
+    "Tem certeza de que deseja excluir o endereço <b>{name}</b>?",
+  DELETE_CONFIRM: "Sim",
+  DELETE_CANCEL: "Não",
+  LOADING_DELETE_ADDRESS: "Excluindo endereço",
+  ALERT_DELETE_SUCCESS_TITLE: "Excluir Endereço",
+  ALERT_DELETE_SUCCESS_MESSAGE: "Endereço excluído com sucesso!",
+
+  // Address edit
+  // Labels do formulário
+  ADDRESS_PERSONAL_INFO: "Informações Pessoais",
+  ADDRESS_NAME: "Nome",
+  ADDRESS_NAME_REQUIRED: "Nome obrigatório",
+  ADDRESS_GENDER: "Gênero",
+  ADDRESS_GENDER_REQUIRED: "Selecione o gênero",
+  ADDRESS_AGE: "Idade",
+  ADDRESS_DEAF: "Surdo?",
+  ADDRESS_MUTE: "Mudo?",
+  ADDRESS_BLIND: "Cego?",
+  ADDRESS_SIGN: "Sabe sinais?",
+  ADDRESS_ADDRESS: "Endereço",
+  ADDRESS_ADDRESS_REQUIRED: "Endereço obrigatório",
+  ADDRESS_HOME_DESCRIPTION: "Descrição do lar",
+  ADDRESS_HOME_DESCRIPTION_REQUIRED: "Campo obrigatório",
+  ADDRESS_TYPE: "Tipo",
+  ADDRESS_STATUS: "Status",
+  ADDRESS_LOCATION: "Localização",
+  ADDRESS_LAT: "Latitude",
+  ADDRESS_LNG: "Longitude",
+  ADDRESS_NOTES: "Notas",
+  ADDRESS_FAMILY_DESCRIPTION: "Descrição da Família",
+  ADDRESS_CONTACTS: "Contatos",
+  ADDRESS_SAVE: "Salvar",
+  ADDRESS_UPDATE: "Atualizar",
+  ADDRESS_BACK: "Voltar",
+
+  // Mensagens de loading
+  LOADING_SAVE_ADDRESS: "Salvando endereço",
+
+  // Alerts / erros
+  ERROR_FILL_REQUIRED_FIELDS: "Por favor, preencha os campos obrigatórios!",
+  ERROR_SAVE_ADDRESS: "Ocorreu um erro ao salvar o endereço!",
+
+  // Assigments
+  ASSIGNMENTS: "Designações",
+  MY_ASSIGNMENTS: "Minhas Designações",
+  LOADING: "Carregando",
+  FILTER: "Filtro",
+  SEARCH_TERRITORY: "Buscar território...",
+  DISTANCE_FILTER: "Mostrar endereços próximos (KM)",
+  HIDE_ASSIGNED: "Ocultar territórios designados",
+  NO_ASSIGNMENTS: "Nenhuma designação",
+  ASSIGN_ONE: "Designar 1 território",
+  ASSIGN_MULTIPLE: "Designar {qty} territórios",
+  ASSIGNING_TERRITORIES: "Designando territórios...",
+  ASSIGNED_TITLE: "Designado",
+  ASSIGNED_MESSAGE: "Territórios designados com sucesso",
+  RETURN_TERRITORY_TITLE: "Retornar Território",
+  RETURN_TERRITORY_CONFIRM:
+    "Tem certeza que deseja retornar o território <b>{number}</b>?",
+  RETURNING_TERRITORY: "Retornando território...",
+  RETURNED_MESSAGE: "Território retornado com sucesso!",
+  YES: "Sim",
+  NO: "Não",
+  ALLOW_LOCATION:
+    "Precisamos da sua localização para mostrar territórios próximos. Deseja permitir?",
+  LOCATION_ERROR: "Não foi possível determinar sua localização.",
+  NO_ADDRESSES: "Nenhum endereço",
+  UNKNOWN: "Desconhecido",
+  NO_ADDRESS: "Sem endereço",
+  ASSIGN_TERRITORIES: "Designar Territórios",
+  SELECT_PUBLISHER: "Selecione um publicador",
+  SELECT_PLACEHOLDER: "-- Selecionar --",
+  TERRITORIES_SELECTED: "Territórios selecionados:",
+  CANCEL: "Cancelar",
+  ASSIGN: "Designar",
+  ERROR_NO_USER: "Selecione um publicador",
+  ERROR_NO_TERRITORIES: "Territórios não selecionados",
+  REQUIRED_NAME: "Nome do contato obrigatório",
+  REQUIRED_PHONE: "Número de telefone obrigatório",
+  ADD_CONTACT: "+",
+  OK: "OK",
+  INFO: "Informação",
+  ERROR: "Erro",
+  ALERT: "Alerta",
+  LOADING: "Carregando",
+  CONFIRM: "Confirmar",
+  MESSAGE: "Mensagem",
+
+  WARNING: "Aviso",
+  ATTENTION: "Atenção",
+
+  TABLE_SEARCH: "Buscar",
+  TABLE_SHOWING: "Mostrando",
+  TABLE_LINES: "linhas",
+  TABLE_ACTIONS: "Ações",
+  TABLE_VIEW: "Visualizar",
+  TABLE_EDIT: "Editar",
+  TABLE_DELETE: "Excluir",
+  TABLE_PREVIOUS: "Anterior",
+  TABLE_NEXT: "Próximo",
+  TABLE_INFO: "Mostrando {start} até {end} de {total} linhas",
+
+  TYPE_HOUSE_TO_HOUSE: "Casa em casa",
+  TYPE_PHONE: "Telefone",
+
+  RETURN_TERRITORY_TITLE: "Retornar Território",
+
+  USERS_TITLE: "Usuários",
+  LOADING_USERS: "Carregando usuários",
+  USER: "Usuário",
+  PASSWORD: "Senha",
+  ACTIVE: "Ativo",
+  UPDATING_STATUS: "Atualizando status",
+  ERROR_UPDATING_STATUS: "Erro ao atualizar status",
+  DEACTIVATE: "Desativar",
+  ACTIVATE: "Ativar",
+
+  TERRITORIES_TITLE: "Territórios",
+  LOADING_TERRITORIES: "Carregando territórios",
+
+  NUMBER: "Número",
+  NAME: "Nome",
+  TYPE: "Tipo",
+
+  DELETE_TERRITORY_TITLE: "Excluir território",
+  DELETE_TERRITORY_MESSAGE:
+    "Tem certeza que deseja excluir o território <b>{{number}}</b>?",
+
+  DELETING_TERRITORY: "Excluindo território",
+
+  DELETE_TERRITORY_SUCCESS_TITLE: "Excluir território",
+  DELETE_TERRITORY_SUCCESS_MESSAGE: "Território excluído com sucesso!",
+
+  NEW_TERRITORY: "Novo território",
+  VIEW_TERRITORY: "Ver território",
+  EDIT_TERRITORY: "Editar território",
+  NUMBER: "Número",
+  NAME: "Nome",
+  REQUIRED_NAME: "Nome obrigatório",
+  TYPE: "Tipo",
+  REQUIRED_TYPE: "Tipo obrigatório",
+  ADDRESSES: "Endereços",
+  REQUIRED_ADDRESSES: "Selecione pelo menos um endereço",
+  BACK: "Voltar",
+  SAVE: "Salvar",
+  UPDATE: "Atualizar",
+  SAVING_TERRITORY: "Salvando território",
+  UPDATING_TERRITORY: "Atualizando território",
+  SAVE_TERRITORY: "Salvar Território",
+  UPDATE_TERRITORY: "Atualizar Território",
+  TERRITORY_SAVED_SUCCESS: "Território salvo com sucesso!",
+  TERRITORY_UPDATED_SUCCESS: "Território atualizado com sucesso!",
+  ERROR_SAVE_TERRITORY: "Ocorreu um erro ao salvar o território!",
+  ERROR_UPDATE_TERRITORY: "Ocorreu um erro ao atualizar o território!",
+  SELECT: "Selecionar",
+};

@@ -1,27 +1,35 @@
+import { translate } from "../util/TranslateUtil.js";
+
 export function showConfirmModal({
   id,
-  title = "Modal Title",
-  message = "Message",
-  primaryLabel = "OK",
-  secondaryLabel = "Cancel",
+  title = "CONFIRM", // chave de tradução
+  message = "MESSAGE", // chave de tradução ou string direta
+  primaryLabel = "YES", // chave de tradução
+  secondaryLabel = "NO", // chave de tradução
   onPrimary = () => {},
   onSecondary = () => {},
 }) {
+  // Tradução das labels
+  const translatedTitle = translate(title);
+  const translatedMessage = translate(message);
+  const translatedPrimary = translate(primaryLabel);
+  const translatedSecondary = translate(secondaryLabel);
+
   // Cria o HTML do modal
   const modalHTML = `
     <div class="modal fade" id="${id}" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">${title}</h5>
+            <h5 class="modal-title">${translatedTitle}</h5>
             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
           </div>
-          <div class="modal-body">${message}</div>
+          <div class="modal-body">${translatedMessage}</div>
           <div class="modal-footer">
-            <button id="${id}-secondary" class="btn btn-danger" type="button">${secondaryLabel}</button>
-            <button id="${id}-primary" class="btn btn-primary" type="button">${primaryLabel}</button>
+            <button id="${id}-secondary" class="btn btn-danger" type="button">${translatedSecondary}</button>
+            <button id="${id}-primary" class="btn btn-primary" type="button">${translatedPrimary}</button>
           </div>
         </div>
       </div>

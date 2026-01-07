@@ -6,18 +6,19 @@ import { renderTerritoryEdit } from "./territory-edit.js";
 import { showConfirmModal } from "../../components/modal.js";
 import { setUpButtonAdd, removeButton } from "../util/PagesUtil.js";
 import { renderAlertModal } from "../../components/renderAlertModal.js";
+import { translate } from "../../util/TranslateUtil.js";
 
 export async function loadTerritory() {
   const content = document.getElementById("card-data");
-  document.getElementById("pageTitle").innerText = "Territorios";
+  document.getElementById("pageTitle").innerText =
+    translate("TERRITORIES_TITLE");
 
   // Força o browser a renderizar
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  showLoading(content, "Cargando Territorios");
+  showLoading(content, translate("LOADING_TERRITORIES"));
 
   const service = new TerritoryService();
-
   const data = await service.getByCongregation();
 
   hideLoading(content);
@@ -25,9 +26,9 @@ export async function loadTerritory() {
   renderTable({
     container: content,
     columns: [
-      { key: "number", label: "Número" },
-      { key: "name", label: "Nombre" },
-      { key: "type", label: "Tipo" },
+      { key: "number", label: translate("NUMBER") },
+      { key: "name", label: translate("NAME") },
+      { key: "type", label: translate("TYPE") },
     ],
     data,
     rowsOptions: [15, 30, 60, 100, 150],
@@ -40,10 +41,9 @@ export async function loadTerritory() {
   });
 
   setUpButtonAdd({
-    buttonId: "btnAdd", // id do botão
-    content, // referência ao container/card
+    buttonId: "btnAdd",
+    content,
     onClick: (content) => {
-      // função de clique personalizada
       const newTerritory = {
         id: null,
         number: "",
@@ -54,24 +54,30 @@ export async function loadTerritory() {
       renderTerritoryEdit(content, newTerritory);
     },
   });
+
   removeButton("btnMap");
 }
 
+/* 🔹 CONFIRMAÇÃO DE EXCLUSÃO */
 function onShowDialogDelete(territory, content) {
-  const confirmodal = showConfirmModal({
-    title: "Eliminar Territorio",
-    message: `¿Está seguro que desea eliminar el territorio <b>${territory.number}</b>?`,
-    primaryLabel: "Sí",
-    secondaryLabel: "No",
+  const confirmModal = showConfirmModal({
+    title: translate("DELETE_TERRITORY_TITLE"),
+    message: translate("DELETE_TERRITORY_MESSAGE", {
+      number: territory.number,
+    }),
+    primaryLabel: translate("YES"),
+    secondaryLabel: translate("NO"),
     onPrimary: () => onDeleteYes(territory, content),
   });
-  confirmodal.show();
+
+  confirmModal.show();
 }
 
+/* 🔹 EXCLUSÃO */
 async function onDeleteYes(territory, content) {
   const service = new TerritoryAddressService();
 
-  showLoading(content, "Eliminando territorio");
+  showLoading(content, translate("DELETING_TERRITORY"));
 
   await service.deleteTerritory(territory);
 
@@ -79,8 +85,8 @@ async function onDeleteYes(territory, content) {
 
   renderAlertModal(document.body, {
     type: "INFO",
-    title: "Deletar Territorio",
-    message: "Territorio deletado com sucesso!",
+    title: translate("DELETE_TERRITORY_SUCCESS_TITLE"),
+    message: translate("DELETE_TERRITORY_SUCCESS_MESSAGE"),
   });
 
   loadTerritory(); // recarrega a tabela

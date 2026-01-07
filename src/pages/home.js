@@ -3,6 +3,12 @@ import { showLoading, hideLoading } from "../components/loading.js";
 import { navigateTo, initRouteDefault } from "./route.js";
 import { showConfirmModal } from "../components/modal.js";
 import { normalizeUrl } from "./util/PagesUtil.js";
+import { applyI18n } from "../util/i18n.js";
+import { translate } from "../util/TranslateUtil.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  applyI18n();
+});
 
 /* 🔹 BASE PATH (Vite) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";
@@ -37,13 +43,12 @@ if (!user) {
   /* 🔹 LOGOUT MODAL DINÂMICO */
   const logoutModal = showConfirmModal({
     id: "logoutModal",
-    title: "¿Listo para partir?",
-    message:
-      'Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual.',
-    primaryLabel: "Cerrar sesión",
-    secondaryLabel: "Cancelar",
+    title: translate("LOGOUT_MODAL_TITLE"),
+    message: translate("LOGOUT_MODAL_MESSAGE"),
+    primaryLabel: translate("LOGOUT_MODAL_PRIMARY"),
+    secondaryLabel: translate("LOGOUT_MODAL_SECONDARY"),
     onPrimary: () => {
-      showLoading(null, "Logout");
+      showLoading(null, translate("LOGOUT_LOADING"));
       loginService.logout();
       hideLoading();
       window.location.replace(normalizeUrl(`${BASE_PATH}`));

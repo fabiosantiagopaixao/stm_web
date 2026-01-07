@@ -1,6 +1,11 @@
 import { LoginService } from "./api/LoginService.js";
 import { renderLogin } from "./pages/login.js";
 import { normalizeUrl } from "./pages/util/PagesUtil.js";
+import { applyI18n } from "./util/i18n.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  applyI18n();
+});
 
 /* 🔹 BASE PATH (Vite dev/prod) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";

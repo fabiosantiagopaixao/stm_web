@@ -1,4 +1,5 @@
 import { renderAddressList } from "./address-list.js";
+import { translate } from "../util/TranslateUtil.js";
 
 export function renderTerritoryCard(
   container,
@@ -8,6 +9,7 @@ export function renderTerritoryCard(
     selected = false,
     onSelect = null,
     onReturn = null,
+    onChangeCheckbox = null, // 🔹 novo callback
     isAssigned = false,
     pageType = "MY_ASSIGNMENTS",
   } = {}
@@ -41,8 +43,10 @@ export function renderTerritoryCard(
 
       <div class="territory-info d-flex align-items-center text-end toggle-area" style="width:35%">
         ${
-          onReturn
-            ? `<a class="return-territory me-2" title="Return territory">
+          onReturn && territory.nameAssigned
+            ? `<a class="return-territory me-2" title="${translate(
+                "RETURN_TERRITORY_TITLE"
+              )}">
                  <i class="fas fa-angle-double-left"></i>
                </a>`
             : ""
@@ -67,7 +71,7 @@ export function renderTerritoryCard(
   const addressesContainer = card.querySelector(".territory-addresses");
   const returnBtn = card.querySelector(".return-territory");
 
-  /* ===== TOGGLE APENAS NAS ÁREAS PERMITIDAS ===== */
+  /* ===== TOGGLE (somente áreas permitidas) ===== */
   const toggleAreas = card.querySelectorAll(".toggle-area");
 
   toggleAreas.forEach((area) => {
@@ -112,18 +116,18 @@ export function renderTerritoryCard(
 
     card.querySelector(".territory-name").prepend(checkbox);
 
-    if (selected) {
-      card.classList.add("selected");
-    }
+    if (selected) card.classList.add("selected");
 
-    checkbox.onclick = (e) => {
-      e.stopPropagation();
-    };
+    checkbox.onclick = (e) => e.stopPropagation();
 
     checkbox.onchange = (e) => {
       const checked = e.target.checked;
       card.classList.toggle("selected", checked);
-      onSelect(checked, territory);
+
+      // 🔹 chama os callbacks
+      if (typeof onSelect === "function") onSelect(checked, territory);
+      if (typeof onChangeCheckbox === "function")
+        onChangeCheckbox(checked, territory);
     };
   }
 

@@ -1,4 +1,8 @@
-export function showLoading(container = null, message = "Loading") {
+import { translate } from "../util/TranslateUtil.js";
+
+export function showLoading(container = null, messageKey = "LOADING") {
+  const message = translate(messageKey);
+
   if (container) {
     container.innerHTML = `
       <div id="app-loading-overlay" class="d-flex flex-column justify-content-center align-items-center text-center"

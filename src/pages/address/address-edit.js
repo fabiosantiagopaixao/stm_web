@@ -1,11 +1,11 @@
-import { removeAddButton, resolveLatLngWithComma } from "../util/PagesUtil";
-import { translate } from "../util/TranslateUtil";
+import { removeAddButton, resolveLatLngWithComma } from "../util/PagesUtil.js";
+import { translate } from "../../util/TranslateUtil.js";
 import { AddressService } from "../../api/services/AddressService.js";
 import { showLoading, hideLoading } from "../../components/loading.js";
 import { renderContacts } from "../../components/contacts.js";
 import { loadAddress } from "./index.js";
 import { LoginService } from "../../api/LoginService.js";
-import { renderAlertModal } from "../../components/renderAlertModal.js"; // ✅ novo modal
+import { renderAlertModal } from "../../components/renderAlertModal.js";
 
 /* =================== CONSTANTS =================== */
 export const AGE_TYPES = [
@@ -46,7 +46,7 @@ function goBackToAddresses() {
 /* ================= Save ================= */
 async function saveAddress(container, data) {
   try {
-    showLoading(container, "Guardando dirección");
+    showLoading(container, translate("LOADING_SAVE_ADDRESS"));
     const service = new AddressService();
     await service.saveUpdate(data);
     loadAddress();
@@ -55,8 +55,8 @@ async function saveAddress(container, data) {
 
     renderAlertModal(document.body, {
       type: "ERROR",
-      title: "Error",
-      message: "¡Se produjo un error al guardar la dirección!",
+      title: translate("ERROR_SAVE_ADDRESS"),
+      message: translate("ERROR_SAVE_ADDRESS"),
     });
   } finally {
     hideLoading();
@@ -80,37 +80,49 @@ export function renderAddressEdit(
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#personalInfo">
-            Información Personal
+            ${translate("ADDRESS_PERSONAL_INFO")}
           </button>
         </h2>
         <div id="personalInfo" class="accordion-collapse collapse show">
           <div class="accordion-body">
 
             <div class="mb-3">
-              <label class="form-label">Nombre</label>
-              <input type="text" id="name" class="form-control" placeholder="Insira su nombre" maxlength="40" value="${
-                addressData.name || ""
-              }" ${readonlyMode ? "disabled" : ""}>
-              <div class="invalid-feedback">Nombre obligatorio</div>
+              <label class="form-label">${translate("ADDRESS_NAME")}</label>
+              <input type="text" id="name" class="form-control" placeholder="${translate(
+                "ADDRESS_NAME"
+              )}" maxlength="40" value="${addressData.name || ""}" ${
+    readonlyMode ? "disabled" : ""
+  }>
+              <div class="invalid-feedback">${translate(
+                "ADDRESS_NAME_REQUIRED"
+              )}</div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label fw-bold">Género</label>
+              <label class="form-label fw-bold">${translate(
+                "ADDRESS_GENDER"
+              )}</label>
               <div class="d-flex gap-2 mt-2" id="genderGroup">
                 <div class="gender-option" data-value="Male">
-                  <img src="img/man.png" class="gender-img" alt="Masculino">
-                  <div class="gender-label">Hombre</div>
+                  <img src="img/man.png" class="gender-img" alt="${translate(
+                    "ADDRESS_GENDER"
+                  )}">
+                  <div class="gender-label">${translate("ADDRESS_DEAF")}</div>
                 </div>
                 <div class="gender-option" data-value="Female">
-                  <img src="img/woman.png" class="gender-img" alt="Femenino">
-                  <div class="gender-label ">Mujer</div>
+                  <img src="img/woman.png" class="gender-img" alt="${translate(
+                    "ADDRESS_GENDER"
+                  )}">
+                  <div class="gender-label">${translate("ADDRESS_SIGN")}</div>
                 </div>
               </div>
-              <div class="invalid-feedback" id="genderError" style="display:none;">Seleccione género</div>
+              <div class="invalid-feedback" id="genderError" style="display:none;">${translate(
+                "ADDRESS_GENDER_REQUIRED"
+              )}</div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Edad</label>
+              <label class="form-label">${translate("ADDRESS_AGE")}</label>
               <select id="age_type" class="form-select" ${
                 readonlyMode ? "disabled" : ""
               }>
@@ -127,25 +139,33 @@ export function renderAddressEdit(
               <input type="checkbox" id="deaf" class="form-check-input" ${
                 addressData.deaf ? "checked" : ""
               } ${readonlyMode ? "disabled" : ""}>
-              <label class="form-check-label" for="deaf">Sordo?</label>
+              <label class="form-check-label" for="deaf">${translate(
+                "ADDRESS_DEAF"
+              )}</label>
             </div>
             <div class="form-check form-check-inline">
               <input type="checkbox" id="mute" class="form-check-input" ${
                 addressData.mute ? "checked" : ""
               } ${readonlyMode ? "disabled" : ""}>
-              <label class="form-check-label" for="mute">Mudo?</label>
+              <label class="form-check-label" for="mute">${translate(
+                "ADDRESS_MUTE"
+              )}</label>
             </div>
             <div class="form-check form-check-inline">
               <input type="checkbox" id="blind" class="form-check-input" ${
                 addressData.blind ? "checked" : ""
               } ${readonlyMode ? "disabled" : ""}>
-              <label class="form-check-label" for="blind">Ciego?</label>
+              <label class="form-check-label" for="blind">${translate(
+                "ADDRESS_BLIND"
+              )}</label>
             </div>
             <div class="form-check form-check-inline">
               <input type="checkbox" id="sign" class="form-check-input" ${
                 addressData.sign ? "checked" : ""
               } ${readonlyMode ? "disabled" : ""}>
-              <label class="form-check-label" for="sign">Sabes señas?</label>
+              <label class="form-check-label" for="sign">${translate(
+                "ADDRESS_SIGN"
+              )}</label>
             </div>
 
           </div>
@@ -156,28 +176,38 @@ export function renderAddressEdit(
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#direccion">
-            Dirección
+            ${translate("ADDRESS_ADDRESS")}
           </button>
         </h2>
         <div id="direccion" class="accordion-collapse collapse">
           <div class="accordion-body">
             <div class="mb-3">
-              <label class="form-label">Dirección</label>
-              <textarea id="address" class="form-control" placeholder="Insira su dirección" ${
-                readonlyMode ? "disabled" : ""
-              }>${addressData.address || ""}</textarea>
-              <div class="invalid-feedback">Dirección obligatoria</div>
+              <label class="form-label">${translate("ADDRESS_ADDRESS")}</label>
+              <textarea id="address" class="form-control" placeholder="${translate(
+                "ADDRESS_ADDRESS"
+              )}" ${readonlyMode ? "disabled" : ""}>${
+    addressData.address || ""
+  }</textarea>
+              <div class="invalid-feedback">${translate(
+                "ADDRESS_ADDRESS_REQUIRED"
+              )}</div>
             </div>
             <div class="mb-3">
-              <label class="form-label">Descripción del hogar</label>
-              <textarea id="home_description" class="form-control" placeholder="Insira las descripción de la casa" ${
-                readonlyMode ? "disabled" : ""
-              }>${addressData.home_description || ""}</textarea>
-              <div class="invalid-feedback">Campo obligatorio</div>
+              <label class="form-label">${translate(
+                "ADDRESS_HOME_DESCRIPTION"
+              )}</label>
+              <textarea id="home_description" class="form-control" placeholder="${translate(
+                "ADDRESS_HOME_DESCRIPTION"
+              )}" ${readonlyMode ? "disabled" : ""}>${
+    addressData.home_description || ""
+  }</textarea>
+              <div class="invalid-feedback">${translate(
+                "ADDRESS_HOME_DESCRIPTION_REQUIRED"
+              )}</div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Tipo</label>
+              <label class="form-label">${translate("ADDRESS_TYPE")}</label>
               <select id="type" class="form-select" ${
                 readonlyMode ? "disabled" : ""
               }>
@@ -191,7 +221,7 @@ export function renderAddressEdit(
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Estado</label>
+              <label class="form-label">${translate("ADDRESS_STATUS")}</label>
               <select id="status" class="form-select" ${
                 readonlyMode ? "disabled" : ""
               }>
@@ -211,18 +241,20 @@ export function renderAddressEdit(
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ubicacion">
-            Ubicación
+            ${translate("ADDRESS_LOCATION")}
           </button>
         </h2>
         <div id="ubicacion" class="accordion-collapse collapse">
           <div class="accordion-body d-flex gap-2">
-            <button type="button" id="btnMap" class="btn btn-primary" title="Localización actual"><i class="fas fa-map-marker-alt"></i> </button>
-            <input type="number" step="any" id="lat" placeholder="Latitud" class="form-control" value="${
-              addressData.lat || ""
-            }">
-            <input type="number" step="any" id="lng" placeholder="Longitud" class="form-control" value="${
-              addressData.lng || ""
-            }">
+            <button type="button" id="btnMap" class="btn btn-primary" title="${translate(
+              "ADDRESS_LOCATION"
+            )}"><i class="fas fa-map-marker-alt"></i> </button>
+            <input type="number" step="any" id="lat" placeholder="${translate(
+              "ADDRESS_LAT"
+            )}" class="form-control" value="${addressData.lat || ""}">
+            <input type="number" step="any" id="lng" placeholder="${translate(
+              "ADDRESS_LNG"
+            )}" class="form-control" value="${addressData.lng || ""}">
           </div>
         </div>
       </div>
@@ -231,14 +263,16 @@ export function renderAddressEdit(
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#notas">
-            Notas
+            ${translate("ADDRESS_NOTES")}
           </button>
         </h2>
         <div id="notas" class="accordion-collapse collapse">
           <div class="accordion-body">
-            <textarea id="description" class="form-control" placeholder="Insira una nota"  ${
-              readonlyMode ? "disabled" : ""
-            }>${addressData.description || ""}</textarea>
+            <textarea id="description" class="form-control" placeholder="${translate(
+              "ADDRESS_NOTES"
+            )}"  ${readonlyMode ? "disabled" : ""}>${
+    addressData.description || ""
+  }</textarea>
           </div>
         </div>
       </div>
@@ -247,14 +281,16 @@ export function renderAddressEdit(
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#familyDescription">
-            Descripción de la Familia
+            ${translate("ADDRESS_FAMILY_DESCRIPTION")}
           </button>
         </h2>
         <div id="familyDescription" class="accordion-collapse collapse">
           <div class="accordion-body">
-            <textarea id="family_description" class="form-control" placeholder="Insiria una descripción de la familia"  ${
-              readonlyMode ? "disabled" : ""
-            }>${addressData.family_description || ""}</textarea>
+            <textarea id="family_description" class="form-control" placeholder="${translate(
+              "ADDRESS_FAMILY_DESCRIPTION"
+            )}"  ${readonlyMode ? "disabled" : ""}>${
+    addressData.family_description || ""
+  }</textarea>
           </div>
         </div>
       </div>
@@ -263,7 +299,7 @@ export function renderAddressEdit(
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contacts">
-            Contactos
+            ${translate("ADDRESS_CONTACTS")}
           </button>
         </h2>
         <div id="contacts" class="accordion-collapse collapse">
@@ -277,14 +313,17 @@ export function renderAddressEdit(
       <div class="row mt-4">
         <div class="col-md-12 d-flex justify-content-end gap-2">
           <button type="button" class="btn btn-secondary" id="btnBack">
-            <i class="fas fa-arrow-left"></i> Voltar
+            <i class="fas fa-arrow-left"></i> ${translate("ADDRESS_BACK")}
           </button>
           ${
             !readonlyMode
-              ? `
-            <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save"></i> ${newAddres ? "Salvar" : "Actualizar"}
-            </button>`
+              ? `<button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> ${
+                    newAddres
+                      ? translate("ADDRESS_SAVE")
+                      : translate("ADDRESS_UPDATE")
+                  }
+                 </button>`
               : ""
           }
         </div>
@@ -362,8 +401,8 @@ export function renderAddressEdit(
     if (error) {
       renderAlertModal(document.body, {
         type: "ERROR",
-        title: "Error",
-        message: "¡Por favor, rellene los campos obligatorios!",
+        title: translate("ERROR_FILL_REQUIRED_FIELDS"),
+        message: translate("ERROR_FILL_REQUIRED_FIELDS"),
       });
       return;
     }
@@ -382,18 +421,14 @@ export function renderAddressEdit(
       lng: resolveLatLngWithComma(container, "#lng"),
       home_description: home.value.trim(),
       phone: phoneString,
-
       age_type: container.querySelector("#age_type").value,
       deaf: container.querySelector("#deaf").checked,
       mute: container.querySelector("#mute").checked,
       blind: container.querySelector("#blind").checked,
       sign: container.querySelector("#sign").checked,
-
       description: container.querySelector("#description").value,
-
       type: container.querySelector("#type").value,
       status: container.querySelector("#status").value,
-
       family_description: container.querySelector("#family_description").value,
     };
     await saveAddress(container, addressNew);

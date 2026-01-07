@@ -3,6 +3,7 @@ import { LoginService } from "../api/LoginService.js";
 import { showLoading, hideLoading } from "../components/loading.js";
 import { showDialog } from "../components/dialog.js";
 import { enableEnterNavigation, normalizeUrl } from "./util/PagesUtil.js";
+import { translate } from "../util/TranslateUtil.js";
 
 /* 🔹 BASE PATH (Vite dev/prod) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";
@@ -19,7 +20,7 @@ function wait(ms) {
 
 /* 🔹 RENDER LOGIN */
 export async function renderLogin() {
-  showLoading(null, "STM Login");
+  showLoading(null, translate("LOADING_STM_LOGIN"));
 
   const app = document.getElementById("app");
   const pageTop = document.getElementById("page-top");
@@ -27,9 +28,7 @@ export async function renderLogin() {
   const loginService = new LoginService();
   const congregationService = new CongregationService();
 
-  // 🔹 LIMPA dados antigos
   localStorage.removeItem("stm_data_congregation");
-
   if (pageTop) pageTop.innerHTML = "";
 
   app.innerHTML = `
@@ -39,7 +38,9 @@ export async function renderLogin() {
           <img src="${BASE_PATH}/img/logo.png" style="max-width:120px;">
         </div>
 
-        <h4 class="text-center text-primary mb-4">Login</h4>
+        <h4 class="text-center text-primary mb-4">${translate(
+          "LOGIN_TITLE"
+        )}</h4>
 
         <!-- 🔹 LISTA DE BANDEIRAS -->
         <div id="countryList" class="d-flex justify-content-center mb-4">
@@ -49,22 +50,30 @@ export async function renderLogin() {
 
         <div class="mb-3">
           <select id="congregation" class="form-select" disabled>
-            <option value="">Select a congregation</option>
+            <option value="">${translate("SELECT_CONGREGATION")}</option>
           </select>
-          <div class="invalid-feedback">Please select a congregation</div>
+          <div class="invalid-feedback">${translate(
+            "CONGREGATION_REQUIRED"
+          )}</div>
         </div>
 
         <div class="mb-3">
-          <input id="username" class="form-control" placeholder="Username" disabled>
-          <div class="invalid-feedback">Username is required</div>
+          <input id="username" class="form-control" placeholder="${translate(
+            "USERNAME_PLACEHOLDER"
+          )}" disabled>
+          <div class="invalid-feedback">${translate("USERNAME_REQUIRED")}</div>
         </div>
 
         <div class="mb-3">
-          <input id="password" type="password" class="form-control" placeholder="Password" disabled>
-          <div class="invalid-feedback">Password is required</div>
+          <input id="password" type="password" class="form-control" placeholder="${translate(
+            "PASSWORD_PLACEHOLDER"
+          )}" disabled>
+          <div class="invalid-feedback">${translate("PASSWORD_REQUIRED")}</div>
         </div>
 
-        <button id="loginBtn" class="btn btn-primary w-100" disabled>Login</button>
+        <button id="loginBtn" class="btn btn-primary w-100" disabled>${translate(
+          "LOGIN_BUTTON"
+        )}</button>
       </div>
     </div>
   `;
@@ -80,9 +89,8 @@ export async function renderLogin() {
 
   const countryKeyStorage = "stm_country";
 
-  // 🔹 FUNÇÃO PARA CARREGAR CONGREGATIONS
   const loadCongregations = async () => {
-    showLoading(null, "Cargando congregaciones");
+    showLoading(null, translate("LOADING_FETCH_CONGREGATIONS"));
     congregationSelect.disabled = true;
     usernameInput.disabled = true;
     passwordInput.disabled = true;
@@ -95,24 +103,18 @@ export async function renderLogin() {
       hideLoading();
 
       const storedCountry = localStorage.getItem(countryKeyStorage);
+      let msg = translate("ERROR_FETCH_CONGREGATIONS_BO");
+      if (storedCountry === "BR")
+        msg = translate("ERROR_FETCH_CONGREGATIONS_BR");
 
-      let msg =
-        "No se pudieron cargar las congregaciones, error interno pais <strong>[Bolivia]</strong> no configurado, contactar el responsabele";
-      if (storedCountry === "BR") {
-        msg =
-          "Não foi possível carregar as congregações, erro interno pais <strong>[Brasil]</strong> não configurado, entre em contato com o responsável";
-      }
-      showDialog({
-        type: "ERROR",
-        message: msg,
-      });
+      showDialog({ type: "ERROR", message: msg });
       return;
     }
 
     hideLoading();
 
     congregationSelect.innerHTML =
-      `<option value="">Select a congregation</option>` +
+      `<option value="">${translate("SELECT_CONGREGATION")}</option>` +
       congregations
         .map(
           (c) => `<option value="${c.number}">${c.name} (${c.city})</option>`
@@ -127,15 +129,12 @@ export async function renderLogin() {
     usernameInput.focus();
   };
 
-  // 🔹 ESCUTA DE BANDEIRAS
+  // Bandeiras
   flags.forEach((flag) => {
     flag.addEventListener("click", async () => {
       localStorage.removeItem("stm_data_congregation");
       localStorage.removeItem("stm_country");
-      // remove a classe selected de todas
       flags.forEach((f) => f.classList.remove("selected"));
-
-      // adiciona a classe selected na bandeira clicada
       flag.classList.add("selected");
 
       const countryCode = flag.dataset.code;
@@ -145,7 +144,6 @@ export async function renderLogin() {
     });
   });
 
-  // 🔹 VERIFICA SE JÁ TEM PAÍS NO STORAGE
   const storedCountry = localStorage.getItem(countryKeyStorage);
   if (storedCountry) {
     const flagToSelect = Array.from(flags).find(
@@ -216,7 +214,7 @@ function attachInputListeners() {
 /* 🔹 LOGIN */
 async function handleLogin(loginService) {
   const start = Date.now();
-  showLoading(null, "Login");
+  showLoading(null, translate("LOGIN_BUTTON"));
 
   try {
     const congregationId = document.getElementById("congregation").value;
@@ -233,10 +231,13 @@ async function handleLogin(loginService) {
     if (user) {
       window.location.replace(normalizeUrl(`${BASE_PATH}home`));
     } else {
-      showDialog({ type: "ERROR", message: "Invalid credentials" });
+      showDialog({
+        type: "ERROR",
+        message: translate("ERROR_INVALID_CREDENTIALS"),
+      });
     }
   } catch (err) {
     hideLoading();
-    showDialog({ type: "ERROR", message: "Login error" });
+    showDialog({ type: "ERROR", message: translate("ERROR_LOGIN") });
   }
 }

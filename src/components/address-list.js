@@ -1,4 +1,5 @@
 import { renderAddressEdit } from "../pages/address/address-edit.js";
+import { translate } from "../util/TranslateUtil.js";
 
 export function renderAddressList(
   containerPrincipal,
@@ -13,7 +14,9 @@ export function renderAddressList(
   container.className = "address-list p-2";
 
   if (addresses.length === 0) {
-    container.innerHTML = `<div class="text-muted small">No addresses</div>`;
+    container.innerHTML = `<div class="text-muted small">${translate(
+      "NO_ADDRESSES"
+    )}</div>`;
     return container;
   }
 
@@ -33,8 +36,10 @@ export function renderAddressList(
     row.innerHTML = `
       <img src="${img}" width="28" />
       <div>
-        <div class="fw-bold small">${address.name || "Unknown"}</div>
-        <div class="text-muted small">${address.address || "No address"}</div>
+        <div class="fw-bold small">${address.name || translate("UNKNOWN")}</div>
+        <div class="text-muted small">${
+          address.address || translate("NO_ADDRESS")
+        }</div>
       </div>
     `;
 

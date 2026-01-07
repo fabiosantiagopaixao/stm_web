@@ -1,4 +1,5 @@
-import { renderAlertModal } from "../components/renderAlertModal.js"; // ✅ novo modal
+import { renderAlertModal } from "../components/renderAlertModal.js";
+import { translate } from "../util/TranslateUtil.js";
 
 export function showAssignTerritoryModal({
   users = [],
@@ -16,15 +17,17 @@ export function showAssignTerritoryModal({
 
   modal.innerHTML = `
     <div class="modal-header">
-      <h5>Assign Territories</h5>
+      <h5>${translate("ASSIGN_TERRITORIES")}</h5>
       <button class="btn-close">&times;</button>
     </div>
 
     <div class="modal-body">
       <div class="mb-3">
-        <label class="form-label fw-bold">Select Publisher</label>
+        <label class="form-label fw-bold">${translate(
+          "SELECT_PUBLISHER"
+        )}</label>
         <select class="form-select" id="assignUserSelect">
-          <option value="">-- Select --</option>
+          <option value="">-- ${translate("SELECT")} --</option>
           ${users
             .map(
               (u) =>
@@ -34,7 +37,7 @@ export function showAssignTerritoryModal({
         </select>
       </div>
 
-      <div class="mb-2 fw-bold">Territories selected:</div>
+      <div class="mb-2 fw-bold">${translate("TERRITORIES_SELECTED")}:</div>
       <ul class="list-group mb-3">
         ${selectedTerritories
           .map(
@@ -49,10 +52,10 @@ export function showAssignTerritoryModal({
 
     <div class="modal-footer">
       <button class="btn btn-danger" id="btnCancel">
-        Cancelar
+        ${translate("CANCEL")}
       </button>
       <button class="btn btn-primary" id="btnAssign">
-        Asignar
+        ${translate("ASSIGN")}
       </button>
     </div>
   `;
@@ -75,7 +78,6 @@ export function showAssignTerritoryModal({
   btnClose.onclick = close;
   btnCancel.onclick = close;
 
-  // Fecha clicando fora
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) close();
   });
@@ -87,8 +89,8 @@ export function showAssignTerritoryModal({
     if (!selectedUser) {
       renderAlertModal(document.body, {
         type: "ERROR",
-        title: "Error",
-        message: "Selecione un publciador",
+        title: translate("ERROR"),
+        message: translate("ERROR_NO_USER"),
       });
       return;
     }
@@ -96,19 +98,19 @@ export function showAssignTerritoryModal({
     if (!selectedTerritories.length) {
       renderAlertModal(document.body, {
         type: "ERROR",
-        title: "Error",
-        message: "Territorios no selecionados",
+        title: translate("ERROR"),
+        message: translate("ERROR_NO_TERRITORIES"),
       });
       return;
     }
 
-    // ✅ APENAS DEVOLVE O USUÁRIO SELECIONADO
+    // ✅ Primeiro fecha o modal
+    close();
+
     onAssign &&
       onAssign({
         user: selectedUser,
         territories: selectedTerritories,
       });
-
-    close();
   };
 }

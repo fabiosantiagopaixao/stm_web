@@ -6,6 +6,7 @@ import { renderAlertModal } from "../../components/renderAlertModal.js";
 import { territoryTypeToLabel } from "./shared-territory.js";
 import { removeAddButton } from "../util/PagesUtil.js";
 import { renderSearchableCheckbox } from "../../components/searchBox.js";
+import { translate } from "../../util/TranslateUtil.js";
 
 /* ================= Helpers ================= */
 const TERRITORY_TYPES = ["HOUSE_TO_HOUSE", "PHONE"];
@@ -26,76 +27,80 @@ export async function renderTerritoryEdit(
 ) {
   const newTerritory = territoryData.id === null;
 
+  // Título da página
   document.getElementById("pageTitle").innerText = newTerritory
-    ? "Nuevo territorio"
+    ? translate("NEW_TERRITORY")
     : readonlyMode
-    ? `Ver territorio - ${territoryData.name}`
-    : `Editar territorio - ${territoryData.name}`;
+    ? `${translate("VIEW_TERRITORY")} - ${territoryData.name}`
+    : `${translate("EDIT_TERRITORY")} - ${territoryData.name}`;
 
   container.innerHTML = `
     <div class="card-body">
       <form id="territoryForm" novalidate>
 
-        <!-- Number / Name -->
+        <!-- Número / Nome -->
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="form-label">Número</label>
+            <label class="form-label">${translate("NUMBER")}</label>
             <input type="text" class="form-control" id="number" value="${
               territoryData.number ?? ""
             }" disabled>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Nombre</label>
+            <label class="form-label">${translate("NAME")}</label>
             <input type="text" class="form-control" id="name" value="${
               territoryData.name ?? ""
             }" ${readonlyMode ? "disabled" : ""}>
-            <div class="invalid-feedback">El nombre es obligatorio</div>
+            <div class="invalid-feedback">${translate("REQUIRED_NAME")}</div>
           </div>
         </div>
 
-        <!-- Type -->
+        <!-- Tipo -->
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="form-label">Tipo</label>
+            <label class="form-label">${translate("TYPE")}</label>
             <div class="mt-2" id="typeGroup">
               ${TERRITORY_TYPES.map(
                 (type) => `
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="type" value="${type}" ${
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="type" value="${type}" ${
                   territoryData.type === type ? "checked" : ""
                 } ${readonlyMode ? "disabled" : ""}>
-                    <label class="form-check-label">${territoryTypeToLabel(
-                      type
-                    )}</label>
-                  </div>
-                `
+                  <label class="form-check-label">${territoryTypeToLabel(
+                    type
+                  )}</label>
+                </div>
+              `
               ).join("")}
-              <div class="invalid-feedback d-none" id="typeError">El tipo es obligatorio</div>
+              <div class="invalid-feedback d-none" id="typeError">${translate(
+                "REQUIRED_TYPE"
+              )}</div>
             </div>
           </div>
         </div>
 
-        <!-- Addresses -->
+        <!-- Endereços -->
         <div class="row mb-3">
           <div class="col-md-12">
-            <label class="form-label">Direcciones</label>
-            <div class="invalid-feedback-custom d-none" id="addressesError">Seleccione al menos una dirección</div>
+            <label class="form-label">${translate("ADDRESSES")}</label>
+            <div class="invalid-feedback-custom d-none" id="addressesError">${translate(
+              "REQUIRED_ADDRESSES"
+            )}</div>
             <div id="addressesContainer"></div>
-            
           </div>
         </div>
 
-        <!-- Actions -->
+        <!-- Ações -->
         <div class="row mt-4">
           <div class="col-md-12 d-flex justify-content-end gap-2">
             <button type="button" class="btn btn-secondary" id="btnBack">
-              <i class="fas fa-arrow-left"></i> Voltar
+              <i class="fas fa-arrow-left"></i> ${translate("BACK")}
             </button>
             ${
               !readonlyMode
                 ? `<button type="submit" class="btn btn-primary">
                      <i class="fas fa-save"></i> ${
-                       newTerritory ? "Salvar" : "Atualizar"
+                       newTerritory ? translate("SAVE") : translate("UPDATE")
                      }
                    </button>`
                 : ""
@@ -114,7 +119,7 @@ export async function renderTerritoryEdit(
   const containerId = "addressesContainer";
   const containerAddress = document.getElementById(containerId);
 
-  showLoading(containerAddress, "Cargando direcciones");
+  showLoading(containerAddress, translate("LOADING_ADDRESSES"));
   let addressesList =
     await territoryAddressService.getAllAddressesByTerritoryNumberToEditAndAdd(
       territoryData.number
@@ -129,14 +134,8 @@ export async function renderTerritoryEdit(
     containerId,
     items: addressesList,
     readonlyMode,
-    onChangeSelected: (ids) => {
-      selectedAddressesIds = ids;
-      console.log("IDs recém selecionados:", ids); // 🔹 log cada alteração
-    },
-    onChangeDeselected: (ids) => {
-      deselectedAddressesIds = ids;
-      console.log("IDs desmarcados:", ids); // 🔹 log cada alteração
-    },
+    onChangeSelected: (ids) => (selectedAddressesIds = ids),
+    onChangeDeselected: (ids) => (deselectedAddressesIds = ids),
   });
 
   /* ================= Validation & Submit ================= */
@@ -187,7 +186,9 @@ export async function renderTerritoryEdit(
 
       showLoading(
         container,
-        newTerritory ? "Saving territory" : "Actualizando territorio"
+        newTerritory
+          ? translate("SAVING_TERRITORY")
+          : translate("UPDATING_TERRITORY")
       );
       await territoryAddressService.saveUpdateAllData(
         updatedTerritory,
@@ -197,10 +198,12 @@ export async function renderTerritoryEdit(
 
       renderAlertModal(document.body, {
         type: "INFO",
-        title: newTerritory ? "Salvar Territorio" : "Actualizar territorio",
+        title: newTerritory
+          ? translate("SAVE_TERRITORY")
+          : translate("UPDATE_TERRITORY"),
         message: newTerritory
-          ? "Territorio salvo com sucesso!"
-          : "Territorio actualizado com sucesso!",
+          ? translate("TERRITORY_SAVED_SUCCESS")
+          : translate("TERRITORY_UPDATED_SUCCESS"),
       });
 
       loadTerritory();
@@ -209,17 +212,19 @@ export async function renderTerritoryEdit(
       hideLoading();
       renderAlertModal(document.body, {
         type: "ERROR",
-        title: newTerritory ? "Salvar Territorio" : "Actualizar Territorio",
+        title: newTerritory
+          ? translate("SAVE_TERRITORY")
+          : translate("UPDATE_TERRITORY"),
         message: newTerritory
-          ? "Ocorreu um erro ao salvar territorio!"
-          : "Ocorreu um erro ao actulizar territorio!",
+          ? translate("ERROR_SAVE_TERRITORY")
+          : translate("ERROR_UPDATE_TERRITORY"),
       });
     } finally {
       hideLoading();
     }
   });
 
-  container.querySelector("#btnBack").addEventListener("click", () => {
-    loadTerritory();
-  });
+  container
+    .querySelector("#btnBack")
+    .addEventListener("click", () => loadTerritory());
 }

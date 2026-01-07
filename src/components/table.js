@@ -2,6 +2,7 @@
 import { renderButton } from "./button.js";
 import { genderMap } from "../pages/util/PagesUtil.js";
 import { normalize } from "../pages/util/PagesUtil.js";
+import { translate } from "../util/TranslateUtil.js";
 
 /* 🔹 BASE PATH (Vite) */
 let BASE_PATH = import.meta.env.BASE_URL || "/";
@@ -31,10 +32,10 @@ export function renderTable({
         <div style="flex-grow:1;margin-right:20px;margin-top:-10px;">
           <input type="search" id="tableSearch"
             class="form-control form-control-sm w-100"
-            placeholder="Buscar">
+            placeholder="${translate("TABLE_SEARCH")}">
         </div>
         <div>
-          <label>Mostrando
+          <label>${translate("TABLE_SHOWING")}
             <select id="rowsPerPage"
               class="form-select form-select-sm d-inline-block w-auto">
               ${rowsOptions
@@ -46,7 +47,8 @@ export function renderTable({
                 )
                 .join("")}
             </select>
-          lineas</label>
+            ${translate("TABLE_LINES")}
+          </label>
         </div>
       </div>
 
@@ -62,7 +64,7 @@ export function renderTable({
                     </th>`
                 )
                 .join("")}
-              <th class="text-center">Acciones</th>
+              <th class="text-center">${translate("TABLE_ACTIONS")}</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -128,14 +130,12 @@ export function renderTable({
 
         if (c.key === "type") {
           if (cellValue === "HOUSE_TO_HOUSE") {
-            cellValue = `<a data-title="Casa en Casa">
-              <img src="${BASE_PATH}/img/house.png"
-                   style="width:50px;height:50px;">
+            cellValue = `<a data-title="${translate("TYPE_HOUSE_TO_HOUSE")}">
+              <img src="${BASE_PATH}/img/house.png" style="width:50px;height:50px;">
             </a>`;
           } else if (cellValue === "PHONE") {
-            cellValue = `<a data-title="Teléfono">
-              <img src="${BASE_PATH}/img/phone.png"
-                   style="width:50px;height:50px;">
+            cellValue = `<a data-title="${translate("TYPE_PHONE")}">
+              <img src="${BASE_PATH}/img/phone.png" style="width:50px;height:50px;">
             </a>`;
           }
         }
@@ -157,30 +157,33 @@ export function renderTable({
       tdActions.className = "text-end text-nowrap";
 
       const buttons = [];
+
       if (onView)
         buttons.push(
           renderButton({
             iconClass: "fas fa-eye",
             colorClass: "btn-info",
-            title: "Visualizar",
+            title: translate("TABLE_VIEW"),
             onClick: () => onView(row),
           })
         );
+
       if (onEdit && !disableEdit)
         buttons.push(
           renderButton({
             iconClass: "fas fa-edit",
-            title: "Editar",
             colorClass: "btn-warning",
+            title: translate("TABLE_EDIT"),
             onClick: () => onEdit(row),
           })
         );
+
       if (onDelete && !disableDelete)
         buttons.push(
           renderButton({
             iconClass: "fas fa-trash",
-            title: "Deletar",
             colorClass: "btn-danger",
+            title: translate("TABLE_DELETE"),
             onClick: () => onDelete(row),
           })
         );
@@ -199,9 +202,10 @@ export function renderTable({
       tbody.appendChild(tr);
     });
 
-    tableInfo.textContent = `Mostrando ${
-      startIndex + 1
-    } hasta ${endIndex} de ${totalRows} lineas`;
+    tableInfo.textContent = translate("TABLE_INFO")
+      .replace("{start}", startIndex + 1)
+      .replace("{end}", endIndex)
+      .replace("{total}", totalRows);
 
     renderPagination(totalPages);
   }
@@ -227,7 +231,7 @@ export function renderTable({
     }
 
     pagination.appendChild(
-      page("Previous", currentPage === 1, () => {
+      page(translate("TABLE_PREVIOUS"), currentPage === 1, () => {
         currentPage--;
         renderTableBody();
       })
@@ -248,7 +252,7 @@ export function renderTable({
     }
 
     pagination.appendChild(
-      page("Next", currentPage === totalPages, () => {
+      page(translate("TABLE_NEXT"), currentPage === totalPages, () => {
         currentPage++;
         renderTableBody();
       })

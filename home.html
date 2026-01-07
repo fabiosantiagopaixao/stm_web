@@ -63,7 +63,7 @@
           <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
           </div>
-          <div class="sidebar-brand-text mx-3">STM Web</div>
+          <div class="sidebar-brand-text mx-3" data-i18n="APP_NAME"></div>
         </a>
 
         <hr class="sidebar-divider my-0" data-role="MENU_DIVIDER1" />
@@ -71,28 +71,30 @@
         <li class="nav-item">
           <a class="nav-link" data-page="home" title="Home" href="#">
             <i class="fas fa-fw fa-home"></i>
-            <span>Home</span>
+            <span data-i18n="MENU_HOME"></span>
           </a>
         </li>
 
         <hr class="sidebar-divider" data-role="MENU_DIVIDER2" />
 
-        <div class="sidebar-heading" data-role="MENU_ADMINISTRATOR">
-          Administrar
-        </div>
+        <div
+          class="sidebar-heading"
+          data-role="MENU_ADMINISTRATOR"
+          data-i18n="MENU_ADMIN"
+        ></div>
         <hr class="sidebar-divider" data-role="MENU_DIVIDER3" />
 
         <li class="nav-item" data-role="MENU_USERS">
           <a class="nav-link" data-page="user" title="Users" href="#">
             <i class="fas fa-fw fa-user"></i>
-            <span>Usuarios</span>
+            <span data-i18n="MENU_USERS"></span>
           </a>
         </li>
 
         <li class="nav-item" data-role="MENU_ADDRESS">
           <a class="nav-link" data-page="address" title="Direcciones" href="#">
             <i class="fas fa-fw fa-map"></i>
-            <span>Direcciones</span>
+            <span data-i18n="MENU_ADDRESSES"></span>
           </a>
         </li>
 
@@ -104,14 +106,14 @@
             href="#"
           >
             <i class="fas fa-fw fa-location-arrow"></i>
-            <span>Territorios</span>
+            <span data-i18n="MENU_TERRITORIES"></span>
           </a>
         </li>
         <!--
         <li class="nav-item" data-role="MENU_NEWS">
           <a class="nav-link" data-page="news" title="Noticias" href="#">
             <i class="fas fa-fw fa-newspaper"></i>
-            <span>Noticias</span>
+            <span data-i18n="MENU_NEWS"></span>
           </a>
         </li>-->
 
@@ -123,7 +125,7 @@
             href="#"
           >
             <i class="fas fa-fw fa-tasks"></i>
-            <span>Asignaciones</span>
+            <span data-i18n="MENU_ASSIGNMENTS"></span>
           </a>
         </li>
 
@@ -136,12 +138,16 @@
             href="#"
           >
             <i class="fas fa-fw fa-file-alt"></i>
-            <span>Formulario S-13</span>
+            <span data-i18n="MENU_FORM_13">Formulario S-13</span>
           </a>
         </li>-->
 
         <hr class="sidebar-divider" data-role="MENU_DIVIDER4" />
-        <div class="sidebar-heading" data-role="MENU_DEFAULT">General</div>
+        <div
+          class="sidebar-heading"
+          data-role="MENU_DEFAULT"
+          data-i18n="MENU_GENERAL"
+        ></div>
 
         <li class="nav-item" data-role="MENU_MY_ASSIGNMENTS">
           <a
@@ -151,7 +157,7 @@
             href="#"
           >
             <i class="fas fa-fw fa-map"></i>
-            <span>Mis Asignaciones</span>
+            <span data-i18n="MENU_MY_ASSIGNMENTS"></span>
           </a>
         </li>
 
@@ -159,15 +165,17 @@
         <li class="nav-item">
           <a class="nav-link" data-page="about" title="About" href="#">
             <i class="fas fa-fw fa-info-circle"></i>
-            <span>Sobre</span>
+            <span data-i18n="MENU_ABOUT"></span>
           </a>
         </li>-->
 
         <hr class="sidebar-divider" />
 
-        <div class="sidebar-heading" style="text-align: center">
-          Congregación
-        </div>
+        <div
+          class="sidebar-heading"
+          style="text-align: center"
+          data-i18n="MENU_CONGREGATION"
+        ></div>
         <div
           id="nameCongregation"
           class="sidebar-heading"
@@ -213,8 +221,7 @@
                   <span
                     id="userName"
                     class="mr-2 d-none d-lg-inline text-gray-600 small"
-                    >Nombre</span
-                  >
+                  ></span>
                   <img
                     id="userLogo"
                     class="img-profile rounded-circle"
@@ -230,7 +237,7 @@
                     <i
                       class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
                     ></i>
-                    Logout
+                    <span data-i18n="LOGOUT"></span>
                   </a>
                 </div>
               </li>
@@ -243,27 +250,35 @@
             <div
               class="d-sm-flex align-items-center justify-content-between mb-4"
             >
-              <h1 id="pageTitle" class="h3 mb-0 text-gray-800">Home</h1>
+              <h1
+                id="pageTitle"
+                class="h3 mb-0 text-gray-800"
+                data-i18n="MENU_HOME"
+              >
+                Home
+              </h1>
               <a
                 href="#"
                 id="btnAdd"
                 class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm noneButton"
               >
-                <i class="fas fa-plus fa-sm text-white-50"></i> Adicionar
+                <i class="fas fa-plus fa-sm text-white-50"></i>
+                <span data-i18n="BUTTON_ADD"></span>
               </a>
               <a
                 id="btnMap"
                 class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm noneButton"
               >
-                <i class="fas fa-map fa-sm text-white-50"></i> Abrir Mapa
+                <i class="fas fa-map fa-sm text-white-50"></i>
+                <span data-i18n="BUTTON_OPEN_MAP"></span>
               </a>
               <a
                 href="#"
                 id="btnAsign"
-                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm noneButton"
+                class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm noneButton"
               >
                 <i class="fas fa-angle-double-right fa-sm text-white-50"></i>
-                Asignar
+                <span data-i18n="BUTTON_ASSIGN"></span>
               </a>
             </div>
 
@@ -276,7 +291,7 @@
         <footer class="sticky-footer bg-white">
           <div class="container my-auto">
             <div class="copyright text-center my-auto">
-              <span>Copyright &copy; Your Website 2020</span>
+              <span data-i18n="FOOTER_COPYRIGHT"></span>
             </div>
           </div>
         </footer>

@@ -6,15 +6,16 @@ import { renderAddressEdit } from "./address-edit.js";
 import { showConfirmModal } from "../../components/modal.js";
 import { setUpButtonAdd, removeButton } from "../util/PagesUtil.js";
 import { renderAlertModal } from "../../components/renderAlertModal.js";
+import { translate } from "../../util/TranslateUtil.js";
 
 export async function loadAddress() {
   const content = document.getElementById("card-data");
-  document.getElementById("pageTitle").innerText = "Direcciones";
+  document.getElementById("pageTitle").innerText = translate("ADDRESS_TITLE");
 
   // Força o browser a renderizar
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  showLoading(content, "Cargando Direcciones");
+  showLoading(content, translate("LOADING_ADDRESS"));
 
   const service = new AddressService();
   const data = await service.getByCongregation();
@@ -22,16 +23,16 @@ export async function loadAddress() {
   renderTable({
     container: content,
     columns: [
-      { key: "gender", label: "Género", width: "100px" },
-      { key: "name", label: "Nombre", width: "200px" },
-      { key: "address", label: "Dirección" },
+      { key: "gender", label: translate("COLUMN_GENDER"), width: "100px" },
+      { key: "name", label: translate("COLUMN_NAME"), width: "200px" },
+      { key: "address", label: translate("COLUMN_ADDRESS") },
     ],
     data,
     rowsOptions: [15, 30, 60, 100, 150],
     tableHeight: null,
     onView: (address) => renderAddressEdit(content, address, true),
     onEdit: (address) => renderAddressEdit(content, address),
-    onDelete: (territory) => onShowDialogDelete(territory, content),
+    onDelete: (address) => onShowDialogDelete(address, content),
   });
 
   hideLoading(content);
@@ -62,15 +63,19 @@ export async function loadAddress() {
       renderAddressEdit(content, newAddress);
     },
   });
+
   removeButton("btnMap");
 }
 
 function onShowDialogDelete(address, content) {
   const confirmodal = showConfirmModal({
-    title: "Eliminar Dirección",
-    message: `¿Está seguro que desea eliminar la dirección <b>${address.name}</b>?`,
-    primaryLabel: "Sí",
-    secondaryLabel: "No",
+    title: translate("DELETE_ADDRESS_TITLE"),
+    message: translate("DELETE_ADDRESS_MESSAGE").replace(
+      "{name}",
+      address.name
+    ),
+    primaryLabel: translate("DELETE_CONFIRM"),
+    secondaryLabel: translate("DELETE_CANCEL"),
     onPrimary: () => onDeleteYes(address, content),
   });
   confirmodal.show();
@@ -79,7 +84,7 @@ function onShowDialogDelete(address, content) {
 async function onDeleteYes(address, content) {
   const service = new TerritoryAddressService();
 
-  showLoading(content, "Eliminando dirección");
+  showLoading(content, translate("LOADING_DELETE_ADDRESS"));
 
   await service.deleteAddress(address);
 
@@ -87,8 +92,8 @@ async function onDeleteYes(address, content) {
 
   renderAlertModal(document.body, {
     type: "INFO",
-    title: "Deletar Dirección",
-    message: "Dirección deletada con sucesso!",
+    title: translate("ALERT_DELETE_SUCCESS_TITLE"),
+    message: translate("ALERT_DELETE_SUCCESS_MESSAGE"),
   });
 
   loadAddress(); // recarrega a tabela

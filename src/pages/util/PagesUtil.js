@@ -1,3 +1,4 @@
+/* ================= Gender Map ================= */
 export const genderMap = {
   Male: {
     CHILD: "child_man.png",
@@ -13,32 +14,46 @@ export const genderMap = {
   },
 };
 
-export function removeAddButton() {
-  const btnAdd = document.getElementById("btnAdd");
-  if (!btnAdd) return;
-
-  btnAdd.classList.add("noneButton");
+/* ================= Botões ================= */
+function toggleButtonVisibility(button, show) {
+  if (!button) return;
+  button.classList.toggle("noneButton", !show);
 }
 
-export function setUpButtonAdd({ buttonId = "btnAdd", content, onClick }) {
-  const btn = document.getElementById(buttonId);
-  if (!btn) return;
-
-  btn.classList.remove("noneButton");
-
-  btn.onclick = (e) => {
+function setButtonClick(button, callback, content, label) {
+  if (!button) return;
+  if (label !== undefined) button.textContent = label;
+  button.onclick = (e) => {
     e.preventDefault();
-    if (typeof onClick === "function") {
-      onClick(content);
-    }
+    if (typeof callback === "function") callback(content);
   };
 }
 
+/**
+ * Exibe um botão e configura o clique.
+ * @param {string} buttonId
+ * @param {HTMLElement} content
+ * @param {Function} onClick
+ * @param {string} [label] - opcional, para botões com texto
+ */
+export function setUpButton({ buttonId, content, onClick, label }) {
+  const btn = document.getElementById(buttonId);
+  toggleButtonVisibility(btn, true);
+  setButtonClick(btn, onClick, content, label);
+}
+
+/**
+ * Remove ou oculta um botão
+ * @param {string} buttonId
+ */
 export function removeButton(buttonId) {
   const btn = document.getElementById(buttonId);
-  if (!btn) return;
+  toggleButtonVisibility(btn, false);
+}
 
-  btn.classList.add("noneButton");
+/* ================= Funções antigas (compatibilidade) ================= */
+export function setUpButtonAdd({ buttonId = "btnAdd", content, onClick }) {
+  setUpButton({ buttonId, content, onClick });
 }
 
 export function setUpButtonAsign({
@@ -47,92 +62,64 @@ export function setUpButtonAsign({
   onClick,
   label,
 }) {
-  const btn = document.getElementById(buttonId);
-  if (!btn) return;
-
-  btn.classList.remove("noneButton");
-  btn.textContent = label;
-
-  btn.onclick = (e) => {
-    e.preventDefault();
-    if (typeof onClick === "function") {
-      onClick(content);
-    }
-  };
+  setUpButton({ buttonId, content, onClick, label });
 }
 
-/**
- * Permite navegar pelos inputs de um formulário usando Enter.
- * @param {HTMLElement[]} fields - Array de inputs/selects do formulário, na ordem.
- * @param {Function} onLastEnter - Função a ser executada quando o usuário apertar Enter no último campo.
- */
+export function removeAddButton() {
+  removeButton("btnAdd");
+}
+
+/* ================= Form Helpers ================= */
 export function enableEnterNavigation(fields, onLastEnter) {
   fields.forEach((field, index) => {
     field.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-
-        const nextField = fields[index + 1];
-        if (nextField) {
-          nextField.focus();
-        } else if (typeof onLastEnter === "function") {
-          onLastEnter(); // dispara a ação no último input
-        }
+        const next = fields[index + 1];
+        if (next) next.focus();
+        else if (typeof onLastEnter === "function") onLastEnter();
       }
     });
   });
 }
 
+/* ================= Normalização ================= */
 export function normalize(str) {
-  return str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+  return (
+    str
+      ?.normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase() || ""
+  );
 }
 
 export function normalizeUrl(url) {
-  return url.replace(/([^:]\/)\/+/g, "$1");
+  return url?.replace(/([^:]\/)\/+/g, "$1") || "";
 }
 
+/* ================= Datas ================= */
 export function getCurrentDateDDMMYYYY() {
-  const today = new Date();
-
-  const day = String(today.getDate()).padStart(2, "0");
-  const month = String(today.getMonth() + 1).padStart(2, "0"); // mês começa em 0
-  const year = today.getFullYear();
-
-  return `${day}/${month}/${year}`;
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2, "0")}/${String(
+    d.getMonth() + 1
+  ).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
 export function formatDateToDDMMYYYY(dateInput) {
   if (!dateInput) return "";
-
-  const date = new Date(dateInput);
-
-  if (isNaN(date.getTime())) return "";
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
+  const d = new Date(dateInput);
+  if (isNaN(d)) return "";
+  return `${String(d.getDate()).padStart(2, "0")}/${String(
+    d.getMonth() + 1
+  ).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-/* ===== MAP BUTTON ===== */
+/* ================= Map / Geolocation ================= */
 export function setUpMapButton(filteredTerritories) {
-  const btnMap = document.getElementById("btnMap");
-  if (!btnMap) return;
-
-  btnMap.classList.remove("noneButton");
-
-  btnMap.onclick = async () => {
-    try {
-      await openMapPage(filteredTerritories);
-    } catch (e) {
-      console.error("Error opening map:", e);
-      alert("Could not open map.");
-    }
-  };
+  setUpButton({
+    buttonId: "btnMap",
+    onClick: () => openMapPage(filteredTerritories),
+  });
 }
 
 export async function openMapPage(filteredTerritories) {
@@ -163,30 +150,20 @@ export async function openMapPage(filteredTerritories) {
     withoutLocation: territoriesWithoutLocation,
     userPosition,
   };
-
-  // Abre a página em branco
   const mapWindow = window.open("map.html", "_blank");
 
-  // Quando a página estiver carregada, envia os dados
   const interval = setInterval(() => {
-    if (mapWindow && mapWindow.postMessage) {
+    if (mapWindow?.postMessage) {
       mapWindow.postMessage({ type: "MAP_DATA", payload: mapData }, "*");
       clearInterval(interval);
     }
   }, 100);
 }
 
-/**
- * Tenta obter a localização do usuário.
- * 1. Usa o navegador (navigator.geolocation) se permitido.
- * 2. Se negado ou não suportado, tenta fallback via IP (aproximado).
- * @returns {Promise<{lat: number, lng: number} | null>}
- */
 export async function getUserLocation() {
-  // Tenta via navegador
   if (navigator.geolocation) {
     try {
-      const pos = await new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
           (pos) =>
             resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
@@ -194,39 +171,24 @@ export async function getUserLocation() {
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       });
-      return pos;
-    } catch (err) {
-      console.warn("Falha ao obter localização via navegador:", err);
-      alert(
-        "Não foi possível obter sua localização pelo navegador. Tentando localização aproximada via IP..."
-      );
+    } catch {
+      console.warn("Falha no navegador. Tentando via IP...");
     }
-  } else {
-    console.warn("Geolocalização não suportada no navegador.");
   }
-
-  // Fallback usando IP (aproximado)
   try {
-    const res = await fetch("https://ipapi.co/json/"); // serviço gratuito de geolocalização por IP
+    const res = await fetch("https://ipapi.co/json/");
     if (!res.ok) throw new Error("Falha ao consultar IP");
     const data = await res.json();
     return { lat: Number(data.latitude), lng: Number(data.longitude) };
   } catch (err) {
     console.warn("Falha ao obter localização via IP:", err);
   }
-
-  // Se tudo falhar, retorna null
   return null;
 }
 
+/* ================= Helpers de Input ================= */
 export function resolveLatLngWithComma(container, selector) {
   const value = container.querySelector(selector)?.value;
-  if (!value) return ""; // se não houver dado, retorna vazio
-
-  // Converte para float
   const num = parseFloat(value);
-  if (isNaN(num)) return ""; // se não for número válido, retorna vazio
-
-  // Converte para string e substitui ponto por vírgula
-  return num.toString().replace(".", ",");
+  return isNaN(num) ? "" : num.toString().replace(".", ",");
 }

@@ -1,10 +1,19 @@
+import { translate } from "../util/TranslateUtil.js";
+
 export function renderAlertModal(container, options = {}) {
   const {
     id = "alertModal",
     type = "INFO",
-    title = "Attention",
+    titleKey = "ALERT",
+    messageKey = null,
     message = "",
-    buttons = [{ text: "OK", className: "btn btn-primary", dismiss: true }],
+    buttons = [
+      {
+        textKey: "OK",
+        className: "btn btn-primary",
+        dismiss: true,
+      },
+    ],
   } = options;
 
   document.getElementById(id)?.remove();
@@ -30,10 +39,14 @@ export function renderAlertModal(container, options = {}) {
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">${iconHtml}${title}</h5>
+          <h5 class="modal-title">
+            ${iconHtml}${translate(titleKey)}
+          </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body">${message}</div>
+        <div class="modal-body">
+          ${messageKey ? translate(messageKey) : message}
+        </div>
         <div class="modal-footer">
           ${buttons
             .map(
@@ -44,7 +57,7 @@ export function renderAlertModal(container, options = {}) {
                 id="${id}-btn-${i}"
                 ${btn.dismiss ? 'data-bs-dismiss="modal"' : ""}
               >
-                ${btn.text}
+                ${btn.textKey ? translate(btn.textKey) : btn.text}
               </button>`
             )
             .join("")}

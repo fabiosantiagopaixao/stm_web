@@ -15,6 +15,8 @@ import {
   removeButton,
 } from "../../../pages/util/PagesUtil.js";
 
+import { translate } from "../../../util/TranslateUtil.js";
+
 /* ===== STATE ===== */
 let territories = [];
 let filteredTerritories = [];
@@ -53,9 +55,7 @@ async function requestUserLocationOnce() {
 
   if (!locationAsked) {
     locationAsked = true;
-    const allow = confirm(
-      "We need your location to show nearby territories. Do you want to allow it?"
-    );
+    const allow = confirm(translate("ALLOW_LOCATION"));
     if (!allow) {
       locationDenied = true;
       return null;
@@ -65,7 +65,7 @@ async function requestUserLocationOnce() {
   try {
     userPosition = await getUserLocation();
     if (!userPosition) {
-      alert("Não foi possível determinar sua localização.");
+      alert(translate("LOCATION_ERROR"));
       return;
     }
     console.log("Latitude:", userPosition.lat, "Longitude:", userPosition.lng);
@@ -85,12 +85,13 @@ export async function loadAssignmentsBase({ pageType }) {
   container.classList.add("card-data-territory");
 
   const title =
-    pageType === "ASSIGNMENTS" ? "Asignaciones" : "Mis Asignaciones";
+    pageType === "ASSIGNMENTS"
+      ? translate("ASSIGNMENTS")
+      : translate("MY_ASSIGNMENTS");
   document.getElementById("pageTitle").innerText = title;
 
-  showLoading(container, `Loading ${title}`);
+  showLoading(container, `${translate("LOADING")} ${title}`);
 
-  // Força o browser a renderizar
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   const loginService = new LoginService();
@@ -118,16 +119,13 @@ async function applyFilter() {
   }
 
   filteredTerritories = territories.filter((t) => {
-    // Filtrar por texto (nome, número ou endereço)
     const byText =
       t.name?.toLowerCase().includes(text) ||
       String(t.number).includes(text) ||
       t.addresses?.some((a) => a.name?.toLowerCase().includes(text));
 
-    // Filtrar por atribuição
     const byAssigned = hideAssigned ? !t.isAssigned : true;
 
-    // Filtrar por distância
     let byDistance = true;
     if (distanceKm) {
       if (!position) return false;
@@ -151,7 +149,7 @@ async function applyFilter() {
   });
 
   renderList();
-  setUpMapButton(filteredTerritories); // atualiza botão do mapa
+  setUpMapButton(filteredTerritories);
 }
 
 /* ===== RENDER ===== */
@@ -171,7 +169,7 @@ function renderCardFilter(container) {
     html += `
       <div class="card card-filter mb-2">
         <div class="card-header filter-header d-flex justify-content-between align-items-center" style="cursor:pointer">
-          <span class="fw-bold">Filtro</span>
+          <span class="fw-bold">${translate("FILTER")}</span>
           <i class="fas ${
             filterOpen ? "fa-chevron-up" : "fa-chevron-down"
           } filter-toggle"></i>
@@ -182,7 +180,7 @@ function renderCardFilter(container) {
             type="text"
             id="territory-filter"
             class="form-control mb-2"
-            placeholder="Search territory..."
+            placeholder="${translate("SEARCH_TERRITORY")}"
           />
 
           <input
@@ -191,7 +189,7 @@ function renderCardFilter(container) {
             class="form-control mb-2"
             min="1"
             max="10"
-            placeholder="Mostrar direcciones cerca (KM)"
+            placeholder="${translate("DISTANCE_FILTER")}"
           />
 
           <div class="form-check" style="margin-left:3px;">
@@ -201,7 +199,7 @@ function renderCardFilter(container) {
               id="hide-assigned"
             />
             <label class="form-check-label" for="hide-assigned">
-              Ocultar territorios asignados
+              ${translate("HIDE_ASSIGNED")}
             </label>
           </div>
         </div>
@@ -254,7 +252,7 @@ function renderList() {
   list.innerHTML = "";
 
   if (!filteredTerritories.length) {
-    list.innerHTML = `<p class="no_data">Ninguna asignación</p>`;
+    list.innerHTML = `<p class="no_data">${translate("NO_ASSIGNMENTS")}</p>`;
     return;
   }
 
@@ -266,12 +264,15 @@ function renderList() {
         isAssigned:
           currentPageType === "MY_ASSIGNMENTS" ? true : territory.isAssigned,
         pageType: currentPageType,
+        onChangeCheckbox: () => {
+          showHideAssign();
+        },
 
+        onReturn: () => onReturnTerritory(territory),
         onSelect: (checked) => {
           checked
             ? selectedTerritoryIds.add(territory.id)
             : selectedTerritoryIds.delete(territory.id);
-          showAssign();
         },
 
         onReturn: () => onReturnTerritory(territory),
@@ -281,15 +282,21 @@ function renderList() {
 }
 
 /* ===== ASSIGN ===== */
-function showAssign() {
+function showHideAssign() {
   const qty = selectedTerritoryIds.size;
-  if (!qty) return;
 
-  setUpButtonAsign({
-    content: document.getElementById("card-data"),
-    label: qty === 1 ? "Assign 1 Territory" : `Assign ${qty} Territories`,
-    onClick: openAssignModal,
-  });
+  if (qty > 0) {
+    setUpButtonAsign({
+      content: document.getElementById("card-data"),
+      label:
+        qty === 1
+          ? translate("ASSIGN_ONE")
+          : translate("ASSIGN_MULTIPLE", { qty }),
+      onClick: openAssignModal,
+    });
+  } else {
+    removeButton("btnAsign");
+  }
 }
 
 /* ===== MODAL ===== */
@@ -306,7 +313,7 @@ async function openAssignModal() {
     selectedTerritories,
     onAssign: async ({ user, territories }) => {
       const content = document.getElementById("card-data");
-      showLoading(content, "Assigning territories...");
+      showLoading(content, translate("ASSIGNING_TERRITORIES"));
 
       try {
         const service = new AssignmentsService();
@@ -314,8 +321,8 @@ async function openAssignModal() {
 
         renderAlertModal(content, {
           type: "SUCCESS",
-          title: "Assigned",
-          message: "Territories assigned successfully",
+          title: translate("ASSIGNED_TITLE"),
+          message: translate("ASSIGNED_MESSAGE"),
         });
 
         await loadAssignmentsBase({ pageType: currentPageType });
@@ -329,10 +336,12 @@ async function openAssignModal() {
 /* ===== RETURN ===== */
 function onReturnTerritory(territory) {
   const modal = showConfirmModal({
-    title: "Retornar Territorio",
-    message: `¿Está seguro que desea retornar el territorio <b>${territory.number}</b>?`,
-    primaryLabel: "Sí",
-    secondaryLabel: "No",
+    title: translate("RETURN_TERRITORY_TITLE"),
+    message: translate("RETURN_TERRITORY_CONFIRM", {
+      number: territory.number,
+    }),
+    primaryLabel: translate("YES"),
+    secondaryLabel: translate("NO"),
     onPrimary: () => returnTerritoryConfirm(territory),
   });
 
@@ -341,7 +350,7 @@ function onReturnTerritory(territory) {
 
 async function returnTerritoryConfirm(territory) {
   const content = document.getElementById("card-data");
-  showLoading(content, "Retornando territorio...");
+  showLoading(content, translate("RETURNING_TERRITORY"));
 
   const service = new AssignmentsService();
   await service.returnTerritory(territory.assignment);
@@ -350,17 +359,10 @@ async function returnTerritoryConfirm(territory) {
 
   renderAlertModal(document.body, {
     type: "INFO",
-    title: "Retornar Territorio",
-    message: "Territorio retornado com sucesso!",
+    title: translate("RETURN_TERRITORY_TITLE"),
+    message: translate("RETURNED_MESSAGE"),
   });
 
-  resetState();
+  // Apenas recarrega os dados mantendo o pageType
   await loadAssignmentsBase({ pageType: currentPageType });
-}
-
-/* ===== RESET ===== */
-function resetState() {
-  territories = [];
-  filteredTerritories = [];
-  selectedTerritoryIds.clear();
 }
