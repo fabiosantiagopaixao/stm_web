@@ -10,6 +10,7 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, "index.html"),
         home: resolve(__dirname, "home.html"),
+        map: resolve(__dirname, "map.html"),
       },
     },
   },

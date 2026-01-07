@@ -4,11 +4,14 @@ import { showLoading, hideLoading } from "../../components/loading.js";
 import { renderTable } from "../../components/table.js";
 import { renderUserEdit } from "./user-edit.js";
 import { renderButton } from "../../components/button.js"; // botão customizado
-import { setUpButtonAdd } from "../util/PagesUtil.js";
+import { setUpButtonAdd, removeButton } from "../util/PagesUtil.js";
 
 export async function loadUser() {
   const content = document.getElementById("card-data");
   document.getElementById("pageTitle").innerText = "Usuarios";
+
+  // Força o browser a renderizar
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
   showLoading(content, "Cargando Usuarios");
 
@@ -54,6 +57,7 @@ export async function loadUser() {
       renderUserEdit(content, newUser);
     },
   });
+  removeButton("btnMap");
 }
 
 /* 🔹 FUNÇÃO DE ALTERAR STATUS */

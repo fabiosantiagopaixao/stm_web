@@ -34,6 +34,13 @@ export function setUpButtonAdd({ buttonId = "btnAdd", content, onClick }) {
   };
 }
 
+export function removeButton(buttonId) {
+  const btn = document.getElementById(buttonId);
+  if (!btn) return;
+
+  btn.classList.add("noneButton");
+}
+
 export function setUpButtonAsign({
   buttonId = "btnAsign",
   content,

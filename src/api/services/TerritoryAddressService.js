@@ -116,6 +116,22 @@ export class TerritoryAddressService {
     return items ?? []; // retorna null se não encontrou
   }
 
+  async getAllAddressesByTerritoryNumberToEditAndAdd(territoryNumber) {
+    const allAddress = await this.addressService.getByCongregation();
+    const addresses = [];
+    const territoryAddresses = await this.getTerritoryAddressTerritoryNumber(
+      territoryNumber
+    );
+
+    for (const address of allAddress) {
+      address.selected =
+        territoryAddresses.find((ta) => ta.address_id === address.id) != null;
+      address.image = this.#getImageBy(address.gender, address.age_type);
+      addresses.push(address);
+    }
+    return addresses;
+  }
+
   async getAddressesByTerritoryNumber(territoryNumber) {
     const territoryAddresses = await this.getTerritoryAddressTerritoryNumber(
       territoryNumber

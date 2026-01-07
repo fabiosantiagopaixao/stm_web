@@ -116,7 +116,7 @@ export async function renderTerritoryEdit(
 
   showLoading(containerAddress, "Cargando direcciones");
   let addressesList =
-    await territoryAddressService.getAddressesByTerritoryNumber(
+    await territoryAddressService.getAllAddressesByTerritoryNumberToEditAndAdd(
       territoryData.number
     );
   hideLoading();

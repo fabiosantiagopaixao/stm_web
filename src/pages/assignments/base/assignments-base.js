@@ -12,6 +12,7 @@ import {
   setUpButtonAsign,
   setUpMapButton,
   getUserLocation,
+  removeButton,
 } from "../../../pages/util/PagesUtil.js";
 
 /* ===== STATE ===== */
@@ -78,6 +79,7 @@ async function requestUserLocationOnce() {
 /* ===== LOAD ===== */
 export async function loadAssignmentsBase({ pageType }) {
   currentPageType = pageType;
+  removeButton("btnAdd");
 
   const container = document.getElementById("card-data");
   container.classList.add("card-data-territory");
@@ -87,6 +89,9 @@ export async function loadAssignmentsBase({ pageType }) {
   document.getElementById("pageTitle").innerText = title;
 
   showLoading(container, `Loading ${title}`);
+
+  // Força o browser a renderizar
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
   const loginService = new LoginService();
   const user = loginService.getLoggedUser();

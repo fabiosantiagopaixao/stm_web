@@ -4,12 +4,15 @@ import { showLoading, hideLoading } from "../../components/loading.js";
 import { renderTable } from "../../components/table.js";
 import { renderAddressEdit } from "./address-edit.js";
 import { showConfirmModal } from "../../components/modal.js";
-import { setUpButtonAdd } from "../util/PagesUtil.js";
+import { setUpButtonAdd, removeButton } from "../util/PagesUtil.js";
 import { renderAlertModal } from "../../components/renderAlertModal.js";
 
 export async function loadAddress() {
   const content = document.getElementById("card-data");
   document.getElementById("pageTitle").innerText = "Direcciones";
+
+  // Força o browser a renderizar
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
   showLoading(content, "Cargando Direcciones");
 
@@ -59,6 +62,7 @@ export async function loadAddress() {
       renderAddressEdit(content, newAddress);
     },
   });
+  removeButton("btnMap");
 }
 
 function onShowDialogDelete(address, content) {
