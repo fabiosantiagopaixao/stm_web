@@ -2,6 +2,7 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyDk9AUNcWTeX7NzGRKVf9Mw_p00R4Bblh0";
 
 let mapData = null;
 let mapsLoaded = false;
+let infoWindow = null;
 
 /* =======================
    GOOGLE MAPS LOADER
@@ -90,6 +91,8 @@ function renderMap() {
     zoom: mapData.userPosition ? 12 : 2,
   });
 
+  infoWindow = new google.maps.InfoWindow();
+
   if (mapData.userPosition) {
     addUserMarker(map);
   }
@@ -111,6 +114,8 @@ function addTerritoryMarkers(map) {
 
   mapData.withLocation.forEach((territory) => {
     territory.addresses.forEach((address) => {
+      if (!address.lat || !address.lng) return;
+
       const marker = new google.maps.Marker({
         position: { lat: address.lat, lng: address.lng },
         map,
@@ -120,16 +125,44 @@ function addTerritoryMarkers(map) {
 
       bounds.extend(marker.position);
 
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <b>${territory.number}</b><br>
-          ${territory.name}<br>
-          ${address.name}
-        `,
-      });
-
       marker.addListener("click", () => {
+        const lat = address.lat;
+        const lng = address.lng;
+
+        const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+        const content = `
+          <div style="max-width:220px">
+            <strong>${territory.number} - ${territory.name}</strong><br>
+            <small>${address.name}</small><br><br>
+            <button
+              id="openMapsBtn"
+              style="
+                padding:6px 10px;
+                width:100%;
+                cursor:pointer;
+                border-radius:4px;
+                border:1px solid #1a73e8;
+                background:#1a73e8;
+                color:white;
+              "
+            >
+              📍 Abrir no Google Maps
+            </button>
+          </div>
+        `;
+
+        infoWindow.setContent(content);
         infoWindow.open(map, marker);
+
+        // bind button click AFTER InfoWindow render
+        setTimeout(() => {
+          document
+            .getElementById("openMapsBtn")
+            ?.addEventListener("click", () => {
+              window.open(mapsUrl, "_blank");
+            });
+        }, 0);
       });
     });
   });
