@@ -20,7 +20,7 @@ import { translate } from "../../../util/TranslateUtil.js";
 /* ===== STATE ===== */
 let territories = [];
 let filteredTerritories = [];
-const selectedTerritoryIds = new Set();
+let selectedTerritoryIds = new Set();
 let currentPageType = null;
 
 let filterText = "";
@@ -324,6 +324,9 @@ async function openAssignModal() {
           title: translate("ASSIGNED_TITLE"),
           message: translate("ASSIGNED_MESSAGE"),
         });
+
+        selectedTerritoryIds = new Set();
+        showHideAssign();
 
         await loadAssignmentsBase({ pageType: currentPageType });
       } finally {
